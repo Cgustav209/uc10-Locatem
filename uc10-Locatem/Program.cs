@@ -1,5 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using uc10_Locatem.Data;
 
 namespace uc10_Locatem
 {
@@ -11,6 +13,8 @@ namespace uc10_Locatem
 
             // Add services to the container.
 
+            builder.Services.AddDbContext<AppDbContext>(options => 
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
