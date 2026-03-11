@@ -35,7 +35,7 @@ namespace uc10_Locatem.Controllers
             return Ok(Produtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public IActionResult GetById([FromRoute] int id)
         {
             var Produtos = new[]
@@ -74,35 +74,34 @@ namespace uc10_Locatem.Controllers
         {
             var Produtos = new[]
            {
-                new { Id = 1, Nome = "Furadeira Impacto", Tipo = "Elétrica", Marca = "Bosch", Descricao = "Furadeira para uso geral", Voltagem = "220V", Acessorios = "Maleta e brocas", PrecoDiaria = "35", Disponivel = "Sim", Categoria = "Furadeiras", DataCadastro = "01/01/2026", Caucao = "150" },
-                new { Id = 2, Nome = "Martelete Perfurador", Tipo = "Elétrica", Marca = "Makita", Descricao = "Ideal para concreto", Voltagem = "220V", Acessorios = "Maleta e ponteiros", PrecoDiaria = "60", Disponivel = "Sim", Categoria = "Marteletes", DataCadastro = "02/01/2026", Caucao = "300" },
-                new { Id = 3, Nome = "Serra Circular", Tipo = "Elétrica", Marca = "DeWalt", Descricao = "Serra para cortes em madeira", Voltagem = "110V", Acessorios = "Disco de corte", PrecoDiaria = "55", Disponivel = "Sim", Categoria = "Serras", DataCadastro = "03/01/2026", Caucao = "250" },
-                new { Id = 4, Nome = "Parafusadeira", Tipo = "Elétrica", Marca = "Black & Decker", Descricao = "Parafusadeira compacta", Voltagem = "Bivolt", Acessorios = "Bits variados", PrecoDiaria = "25", Disponivel = "Sim", Categoria = "Parafusadeiras", DataCadastro = "04/01/2026", Caucao = "120" },
-                new { Id = 5, Nome = "Lixadeira Orbital", Tipo = "Elétrica", Marca = "Makita", Descricao = "Lixamento fino em madeira", Voltagem = "220V", Acessorios = "Lixas extras", PrecoDiaria = "30", Disponivel = "Sim", Categoria = "Lixadeiras", DataCadastro = "05/01/2026", Caucao = "140" },
-                new { Id = 6, Nome = "Esmerilhadeira", Tipo = "Elétrica", Marca = "Bosch", Descricao = "Corte e desbaste em metal", Voltagem = "110V", Acessorios = "Disco de corte", PrecoDiaria = "40", Disponivel = "Sim", Categoria = "Esmerilhadeiras", DataCadastro = "06/01/2026", Caucao = "180" },
-                new { Id = 7, Nome = "Compressor de Ar", Tipo = "Elétrico", Marca = "Schulz", Descricao = "Compressor portátil", Voltagem = "220V", Acessorios = "Mangueira", PrecoDiaria = "70", Disponivel = "Sim", Categoria = "Compressores", DataCadastro = "07/01/2026", Caucao = "400" },
-                new { Id = 8, Nome = "Betoneira", Tipo = "Elétrica", Marca = "Csm", Descricao = "Mistura de concreto", Voltagem = "220V", Acessorios = "Tambor", PrecoDiaria = "120", Disponivel = "Sim", Categoria = "Construção", DataCadastro = "08/01/2026", Caucao = "800" },
-                new { Id = 9, Nome = "Escada Extensiva", Tipo = "Manual", Marca = "Mor", Descricao = "Escada de alumínio", Voltagem = "N/A", Acessorios = "Trava de segurança", PrecoDiaria = "20", Disponivel = "Sim", Categoria = "Escadas", DataCadastro = "09/01/2026", Caucao = "100" },
-                new { Id = 10, Nome = "Lavadora Alta Pressão", Tipo = "Elétrica", Marca = "Karcher", Descricao = "Lavadora para limpeza pesada", Voltagem = "220V", Acessorios = "Mangueira e bico", PrecoDiaria = "50", Disponivel = "Sim", Categoria = "Lavadoras", DataCadastro = "10/01/2026", Caucao = "200" },
+            new { Id = 1, Nome = "Furadeira Impacto", Tipo = "Elétrica", Marca = "Bosch", Descricao = "Furadeira para uso geral", Voltagem = "220V", Acessorios = "Maleta e brocas", PrecoDiaria = "35", Disponivel = "Sim", Categoria = "Furadeiras", DataCadastro = "01/01/2026", Caucao = "150" },
+            new { Id = 2, Nome = "Martelete Perfurador", Tipo = "Elétrica", Marca = "Makita", Descricao = "Ideal para concreto", Voltagem = "220V", Acessorios = "Maleta e ponteiros", PrecoDiaria = "60", Disponivel = "Sim", Categoria = "Marteletes", DataCadastro = "02/01/2026", Caucao = "300" },
+            new { Id = 3, Nome = "Serra Circular", Tipo = "Elétrica", Marca = "Bosch", Descricao = "Serra para cortes em madeira", Voltagem = "110V", Acessorios = "Disco de corte", PrecoDiaria = "55", Disponivel = "Sim", Categoria = "Serras", DataCadastro = "03/01/2026", Caucao = "250" },
+            new { Id = 4, Nome = "Parafusadeira", Tipo = "Elétrica", Marca = "Makita", Descricao = "Parafusadeira compacta", Voltagem = "Bivolt", Acessorios = "Bits variados", PrecoDiaria = "25", Disponivel = "Sim", Categoria = "Parafusadeiras", DataCadastro = "04/01/2026", Caucao = "120" },
+            new { Id = 5, Nome = "Lixadeira Orbital", Tipo = "Elétrica", Marca = "Bosch", Descricao = "Lixamento fino em madeira", Voltagem = "220V", Acessorios = "Lixas extras", PrecoDiaria = "30", Disponivel = "Sim", Categoria = "Lixadeiras", DataCadastro = "05/01/2026", Caucao = "140" },
+            new { Id = 6, Nome = "Esmerilhadeira", Tipo = "Elétrica", Marca = "Makita", Descricao = "Corte e desbaste em metal", Voltagem = "110V", Acessorios = "Disco de corte", PrecoDiaria = "40", Disponivel = "Sim", Categoria = "Esmerilhadeiras", DataCadastro = "06/01/2026", Caucao = "180" },
+            new { Id = 7, Nome = "Compressor de Ar", Tipo = "Elétrico", Marca = "Bosch", Descricao = "Compressor portátil", Voltagem = "220V", Acessorios = "Mangueira", PrecoDiaria = "70", Disponivel = "Sim", Categoria = "Compressores", DataCadastro = "07/01/2026", Caucao = "400" },
+            new { Id = 8, Nome = "Betoneira", Tipo = "Elétrica", Marca = "Makita", Descricao = "Mistura de concreto", Voltagem = "220V", Acessorios = "Tambor", PrecoDiaria = "120", Disponivel = "Sim", Categoria = "Construção", DataCadastro = "08/01/2026", Caucao = "800" },
+            new { Id = 9, Nome = "Escada Extensiva", Tipo = "Manual", Marca = "Bosch", Descricao = "Escada de alumínio", Voltagem = "N/A", Acessorios = "Trava de segurança", PrecoDiaria = "20", Disponivel = "Sim", Categoria = "Escadas", DataCadastro = "09/01/2026", Caucao = "100" },
+            new { Id = 10, Nome = "Lavadora Alta Pressão", Tipo = "Elétrica", Marca = "Makita", Descricao = "Lavadora para limpeza pesada", Voltagem = "220V", Acessorios = "Mangueira e bico", PrecoDiaria = "50", Disponivel = "Sim", Categoria = "Lavadoras", DataCadastro = "10/01/2026", Caucao = "200" }
 
             };
 
-            var produtoMarca = Produtos.FirstOrDefault(produto => produto.Marca.Equals(marca, StringComparison.OrdinalIgnoreCase));   
-            // Verifica se a Marca do produto é igual à marca recebida na rota
-            // Equals compara as duas strings
-            // StringComparison.OrdinalIgnoreCase faz a comparação ignorando maiúsculas e minúsculas
+            var produtoMarca = Produtos
+           .Where(produto => produto.Marca.Equals(marca, StringComparison.OrdinalIgnoreCase))
+           .ToList();
 
-            if (produtoMarca == null)
+            if (!produtoMarca.Any())
             {
                 return BadRequest(
-                  //Retorno em formato JSON
-                  new
-                  {
-                      Erro = true,
-                      Mensagem = $"O Produto da marca {marca} não foi encontrado"
-                  }
-                  );
+                    new
+                    {
+                        Erro = true,
+                        Mensagem = $"Nenhum produto da marca {marca} foi encontrado"
+                    }
+                );
             }
+
             return Ok(produtoMarca);
         }
     }
