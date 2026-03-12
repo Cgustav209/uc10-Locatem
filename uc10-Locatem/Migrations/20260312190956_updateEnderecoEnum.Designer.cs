@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uc10_Locatem.Data;
 
@@ -11,9 +12,11 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260312190956_updateEnderecoEnum")]
+    partial class updateEnderecoEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,7 @@ namespace uc10_Locatem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Complemento")
+                    b.Property<string>("Complemente")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
@@ -128,17 +131,12 @@ namespace uc10_Locatem.Migrations
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
                 {
                     b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
-                        .WithMany("Enderecos")
+                        .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("uc10_Locatem.Model.Usuario", b =>
-                {
-                    b.Navigation("Enderecos");
                 });
 #pragma warning restore 612, 618
         }

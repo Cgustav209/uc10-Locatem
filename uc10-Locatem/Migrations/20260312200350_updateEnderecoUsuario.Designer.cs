@@ -12,8 +12,8 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260311195626_initialMigration")]
-    partial class initialMigration
+    [Migration("20260312200350_updateEnderecoUsuario")]
+    partial class updateEnderecoUsuario
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,7 @@ namespace uc10_Locatem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Complemente")
+                    b.Property<string>("Complemento")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
@@ -66,6 +66,9 @@ namespace uc10_Locatem.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("TipoEndereco")
+                        .HasColumnType("int");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
@@ -103,7 +106,7 @@ namespace uc10_Locatem.Migrations
                     b.Property<int>("Hash")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -116,8 +119,9 @@ namespace uc10_Locatem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Tipo")
-                        .HasColumnType("bit");
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -127,12 +131,17 @@ namespace uc10_Locatem.Migrations
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
                 {
                     b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
-                        .WithMany()
+                        .WithMany("Enderecos")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.Usuario", b =>
+                {
+                    b.Navigation("Enderecos");
                 });
 #pragma warning restore 612, 618
         }

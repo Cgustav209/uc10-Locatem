@@ -8,9 +8,11 @@ namespace uc10_Locatem.Model
         [Key]
         public int Id { get; set; }
 
+
+
         [Required(ErrorMessage = "Nome é um valor obrigatorio")]
         [StringLength(100, ErrorMessage = "O nome pode conter até 100 caracteres")]
-        public string Name { get; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email é um campo obrigatorio")]
         [EmailAddress(ErrorMessage ="Email invalido.")]
@@ -25,7 +27,7 @@ namespace uc10_Locatem.Model
         public string Telefone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Escolha um Tipo")]
-        public bool Tipo { get; set; }
+        public string Tipo { get; set; }
 
        
         [Required(ErrorMessage ="Documento é obrigatorio")]
@@ -38,7 +40,7 @@ namespace uc10_Locatem.Model
         public bool Ativo {  get; set; }
 
 
-        List<Endereco> Enderecos { get; set; } = [];
+        public List<Endereco> Enderecos { get; set; } = [];
 
         public Usuario()
         {
