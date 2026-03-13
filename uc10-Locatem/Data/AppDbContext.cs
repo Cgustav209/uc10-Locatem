@@ -14,5 +14,7 @@ namespace uc10_Locatem.Data
 
         public DbSet<Endereco> Endereco { get; set; }
 
+        public DbSet<Ferramenta> Ferramenta { get; set; }
+
     }
 }
