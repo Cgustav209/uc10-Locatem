@@ -1,16 +1,13 @@
-﻿using uc10_Locatem.Enum;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using uc10_Locatem.Enum;
 
 namespace uc10_Locatem.Model
 {
     public class Reserva
     {
         public int Id { get; set; }
-        
-        public int LocatarioId { get; set; }
-
-        public int LocadorId { get; set; }
-
-        public int ProdutolId { get; set; }
+                      
+        public int FerramentaId { get; set; } // Aqui vou ter que trocar para FerramentaId
 
         public DateTime DataInicio { get; set; }
 
@@ -20,8 +17,10 @@ namespace uc10_Locatem.Model
 
         public DateTime DataCriacao { get; set; }
 
-        public Usuario Locatario { get; set; } = null!;
+        public int UsuarioId { get; set; }
 
-        public Usuario Locador { get; set; } = null!;
+        [ForeignKey(nameof(UsuarioId))]
+        public Usuario Usuario { get; set; } = null!;
+        
     }
 }

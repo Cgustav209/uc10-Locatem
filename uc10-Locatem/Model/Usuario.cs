@@ -44,6 +44,8 @@ namespace uc10_Locatem.Model
 
         public List<Endereco> Enderecos { get; set; } = [];
 
+        public List<Reserva> Reservas { get; set; } = [];
+
         public Usuario()
         {
             DataCadastro = DateTime.UtcNow;

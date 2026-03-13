@@ -77,6 +77,39 @@ namespace uc10_Locatem.Migrations
                     b.ToTable("Endereco");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.Reserva", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataFim")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProdutolId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Reserva");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -120,6 +153,9 @@ namespace uc10_Locatem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TipoUsuario")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuario");
@@ -136,9 +172,22 @@ namespace uc10_Locatem.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.Reserva", b =>
+                {
+                    b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
+                        .WithMany("Reservas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.Usuario", b =>
                 {
                     b.Navigation("Enderecos");
+
+                    b.Navigation("Reservas");
                 });
 #pragma warning restore 612, 618
         }
