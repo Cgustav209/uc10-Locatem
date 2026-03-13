@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using uc10_Locatem.API.Model;
+using uc10_Locatem.Enum;
 
 namespace uc10_Locatem.Model
 {
@@ -8,6 +9,7 @@ namespace uc10_Locatem.Model
         [Key]
         public int Id { get; set; }
 
+        public TipoUsuario TipoUsuario { get; set; }
 
 
         [Required(ErrorMessage = "Nome é um valor obrigatorio")]
