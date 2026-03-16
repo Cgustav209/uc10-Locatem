@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using uc10_Locatem.API.Model;
+using uc10_Locatem.Enum;
 
 namespace uc10_Locatem.Model
 {
@@ -27,7 +28,11 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Escolha um Tipo")]
         public string Tipo { get; set; } = string.Empty ;
 
-       
+        [Required]
+        public TipoUsuario TipoUsuario { get; set; }
+
+        public string? FotoPerfilUrl { get; set; }
+
         [Required(ErrorMessage ="Documento é obrigatorio")]
         [StringLength(14, ErrorMessage ="Documento deve conter 14 caracteres no formato xxx.xxx.xxx-xx")]
         //[RegularExpression(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$", ErrorMessage ="Documento deve estar no formato xxx.xxx.xxx-xx")]

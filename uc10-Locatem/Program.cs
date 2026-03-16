@@ -31,8 +31,10 @@ namespace uc10_Locatem
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthorization();                            
 
+           //coloquei para a foto de perfil ser salva na pasta wwwroot
+           app.UseStaticFiles();
 
             app.MapControllers();
 
