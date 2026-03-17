@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using uc10_Locatem.API.Model;
+using uc10_Locatem.Enum;
 
 namespace uc10_Locatem.Model
 {
@@ -7,6 +8,12 @@ namespace uc10_Locatem.Model
     {
         [Key]
         public int Id { get; set; }
+
+        public string IdGoogle { get; set; } = string.Empty;
+
+        public string CodigoRecuperacaoSenha { get; set; } = string.Empty;
+
+        public string ValidacaoToken { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Nome é um valor obrigatorio")]
         [StringLength(100, ErrorMessage = "O nome pode conter até 100 caracteres")]
@@ -17,6 +24,7 @@ namespace uc10_Locatem.Model
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Senha é um campo obrigatorio")]
+        [StringLength(8, ErrorMessage = "Senha deve conter 08 caracter")]
         public string Senha {  get; set; } = string.Empty;
 
         public int Hash{ get; set; }
@@ -32,6 +40,9 @@ namespace uc10_Locatem.Model
         [StringLength(14, ErrorMessage ="Documento deve conter 14 caracteres no formato xxx.xxx.xxx-xx")]
         //[RegularExpression(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$", ErrorMessage ="Documento deve estar no formato xxx.xxx.xxx-xx")]
         public string Documento { get; set; } = string.Empty ;
+
+        public TipoUsuario TipoUsuario { get; set; }
+
 
         public DateTime DataCadastro { get; set; }
 
