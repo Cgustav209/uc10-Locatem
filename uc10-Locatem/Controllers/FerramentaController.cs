@@ -7,13 +7,13 @@ using uc10_Locatem.Model.DTO;
 namespace uc10_Locatem.Controllers
 {
     [ApiController]
-    
+
     [Route("api/[controller]")]
     public class FerramentaController : ControllerBase
     {
         private readonly AppDbContext _ferramentaDbContext;
 
-        public FerramentaController(AppDbContext context) 
+        public FerramentaController(AppDbContext context)
         {
             _ferramentaDbContext = context;
         }
@@ -26,6 +26,10 @@ namespace uc10_Locatem.Controllers
             return Ok(listaFerramenta);
         }
 
+        [HttpPost("CadastrarFerramenta")]
+        public async Task<ActionResult> CadastrarFerramenta([FromBody]) CadastrarFerramentaDTO dadosFerramentas){
+            
+            }
 
     
 
