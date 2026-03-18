@@ -24,7 +24,7 @@ namespace uc10_Locatem.Model.DTO
 
         public string Telefone { get; set; } = string.Empty;
 
-        public string Documeto { get; set; } = string.Empty;
+        public string Documento { get; set; } = string.Empty;
 
         public TipoUsuario TipoUsuario { get; set; }
 

@@ -10,7 +10,6 @@ using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
 
@@ -73,6 +72,7 @@ namespace uc10_Locatem.Controllers
             return Ok(usuarios);
         }
 
+        [AllowAnonymous]
         [HttpPost("CriarUsuario")]
         public async Task<ActionResult> CriarUsuario([FromBody] CriarUsuarioDTO dadosUsuario)
         {
@@ -84,7 +84,7 @@ namespace uc10_Locatem.Controllers
 
             bool usuarioExiste = await _usuarioDbContext.Usuario.AnyAsync(u =>
                 u.Email == dadosUsuario.Email
-                || u.Documento == dadosUsuario.Documeto
+                || u.Documento == dadosUsuario.Documento
             );
 
             if (usuarioExiste)
@@ -100,69 +100,76 @@ namespace uc10_Locatem.Controllers
             {
                 Nome = dadosUsuario.Nome,
                 Email = dadosUsuario.Email,
+                Senha = dadosUsuario.Senha,
                 Tipo = dadosUsuario.Tipo,
                 Telefone = dadosUsuario.Telefone,
-                Documento = dadosUsuario.Documeto,
-                TipoUsuario = dadosUsuario.TipoUsuario,
-
+                Documento = dadosUsuario.Documento,
+                TipoUsuario = dadosUsuario.TipoUsuario,       
             };
 
             _usuarioDbContext.Usuario.Add(usuario);
 
-            try
-            {
-                int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
-
-                if (resultadoGravacao > 0)
-                    return Created();
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict(new
-                {
-                    Erro = true,
-                    Mensagem = "CPF ou e-mail já cadastrado."
-                });
-            }
-
-            return BadRequest("Erro ao criar usuário");
-        }
-
-        [HttpPost("upload-foto")]
-        public async Task<IActionResult> UploadFoto([FromForm] UsuarioFotoDTO dto)
-        {
-            var usuario = await _usuarioDbContext.Usuario.FindAsync(dto.UsuarioId);
-
-            if (usuario == null)
-                return NotFound("Usuário não encontrado");
-
-            if (dto.Foto == null || dto.Foto.Length == 0)
-                return BadRequest("Arquivo inválido");
-
-            var nomeArquivo = Guid.NewGuid().ToString()
-                + Path.GetExtension(dto.Foto.FileName);
-
-            var pasta = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot/uploads/usuarios"
-            );
-
-            if (!Directory.Exists(pasta))
-                Directory.CreateDirectory(pasta);
-
-            var caminho = Path.Combine(pasta, nomeArquivo);
-
-            using (var stream = new FileStream(caminho, FileMode.Create))
-            {
-                await dto.Foto.CopyToAsync(stream);
-            }
-
-            usuario.FotoPerfilUrl = $"/uploads/usuarios/{nomeArquivo}";
-
             await _usuarioDbContext.SaveChangesAsync();
 
-            return Ok(new { usuario.FotoPerfilUrl });
+            return Ok(new
+            {
+                Mensagem = "Usuário criado com sucesso"
+            });
+
+            //try
+            //{
+            //    int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
+
+            //    if (resultadoGravacao > 0)
+            //        return Created();
+            //}
+            //catch (DbUpdateException)
+            //{
+            //    return Conflict(new
+            //    {
+            //        Erro = true,
+            //        Mensagem = "CPF ou e-mail já cadastrado."
+            //    });
+            //}
+
+            //return BadRequest("Erro ao criar usuário");
         }
+
+        //[HttpPost("upload-foto")]
+        //public async Task<IActionResult> UploadFoto([FromForm] UsuarioFotoDTO dto)
+        //{
+        //    var usuario = await _usuarioDbContext.Usuario.FindAsync(dto.UsuarioId);
+
+        //    if (usuario == null)
+        //        return NotFound("Usuário não encontrado");
+
+        //    if (dto.Foto == null || dto.Foto.Length == 0)
+        //        return BadRequest("Arquivo inválido");
+
+        //    var nomeArquivo = Guid.NewGuid().ToString()
+        //        + Path.GetExtension(dto.Foto.FileName);
+
+        //    var pasta = Path.Combine(
+        //        Directory.GetCurrentDirectory(),
+        //        "wwwroot/uploads/usuarios"
+        //    );
+
+        //    if (!Directory.Exists(pasta))
+        //        Directory.CreateDirectory(pasta);
+
+        //    var caminho = Path.Combine(pasta, nomeArquivo);
+
+        //    using (var stream = new FileStream(caminho, FileMode.Create))
+        //    {
+        //        await dto.Foto.CopyToAsync(stream);
+        //    }
+
+        //    usuario.FotoPerfilUrl = $"/uploads/usuarios/{nomeArquivo}";
+
+        //    await _usuarioDbContext.SaveChangesAsync();
+
+        //    return Ok(new { usuario.FotoPerfilUrl });
+        //}
 
 
         [HttpPost("login")]
@@ -186,7 +193,13 @@ namespace uc10_Locatem.Controllers
             // AQUI ENTRA O TOKEN
             var token = _tokenService.GerarToken(usuario);
 
-            return Ok(new { token });
+            return Ok(new
+            {
+                Mensagem = "Login realizado com sucesso",
+                Nome = usuario.Nome,
+                TipoUsuario = usuario.TipoUsuario.ToString(),
+                Token = token,
+            });
         }
 
         [Authorize]
