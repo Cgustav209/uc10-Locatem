@@ -22,25 +22,29 @@ namespace uc10_Locatem.Model
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [Required(ErrorMessage = "A senha é obrigatória")]
         [StringLength(255, ErrorMessage = "A senha deve ter no máximo 255 caracteres")]
+<<<<<<< Updated upstream
         public string Senha {  get; set; } = string.Empty;
+=======
+        public string Senha { get; set; } = string.Empty;
+>>>>>>> Stashed changes
 
-        public int Hash{ get; set; }
+        public int Hash { get; set; }
 
         [Required(ErrorMessage = "Telefone é um campo obrigatorio")]
         public string Telefone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Escolha um Tipo")]
-        public string Tipo { get; set; } = string.Empty ;
+        public string Tipo { get; set; } = string.Empty;
 
         [Required]
         public TipoUsuario TipoUsuario { get; set; }
 
         public string? FotoPerfilUrl { get; set; }
 
-        [Required(ErrorMessage ="Documento é obrigatorio")]
-        [StringLength(14, ErrorMessage ="Documento deve conter 14 caracteres no formato xxx.xxx.xxx-xx")]
+        [Required(ErrorMessage = "Documento é obrigatorio")]
+        [StringLength(14, ErrorMessage = "Documento deve conter 14 caracteres no formato xxx.xxx.xxx-xx")]
         //[RegularExpression(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$", ErrorMessage ="Documento deve estar no formato xxx.xxx.xxx-xx")]
-        public string Documento { get; set; } = string.Empty ;
+        public string Documento { get; set; } = string.Empty;
 
         [JsonIgnore]
         public DateTime DataCadastro { get; set; }
