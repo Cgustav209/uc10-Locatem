@@ -2,10 +2,10 @@
 
 namespace uc10_Locatem.Model.DTO
 {
-    public class UsuarioFotoDTO
+    public class UploadFotoDTO
     {
         public int UsuarioId { get; set; }
 
-        public IFormFile Foto { get; set; } = null!;
+        public IFormFile? Foto { get; set; }
     }
 }

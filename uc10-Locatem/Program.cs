@@ -13,6 +13,7 @@ namespace uc10_Locatem
 
             // Add services to the container.
 
+
             builder.Services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
           
@@ -33,8 +34,7 @@ namespace uc10_Locatem
 
             app.UseAuthorization();                            
 
-           //coloquei para a foto de perfil ser salva na pasta wwwroot
-           app.UseStaticFiles();
+      
 
             app.MapControllers();
 

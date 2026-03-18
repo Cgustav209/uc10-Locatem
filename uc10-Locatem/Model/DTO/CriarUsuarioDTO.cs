@@ -13,7 +13,6 @@ namespace uc10_Locatem.Model.DTO
 
         public string Documeto { get; set; } = string.Empty;
 
-        public TipoUsuario TipoUsuario { get; set; }
 
     }
 }

@@ -21,5 +21,7 @@ namespace uc10_Locatem.Data
 
         public DbSet<Aluguel> Alugueis { get; set; } // Cria uma tabela chamada Alugueis baseada na classe Aluguel
 
+        public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; } // Cria uma tabela chamada UsuarioPerfis baseada na classe UsuarioPerfil
+
     }
 }
