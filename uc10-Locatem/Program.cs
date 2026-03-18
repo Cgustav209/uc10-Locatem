@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using uc10_Locatem.Data;
+using uc10_Locatem.Services;
 
 namespace uc10_Locatem
 {
@@ -18,6 +19,8 @@ namespace uc10_Locatem
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            // Registrar o serviço de reserva para injeção de dependência
+            builder.Services.AddScoped<ReservaService>();
 
             var app = builder.Build();
 
