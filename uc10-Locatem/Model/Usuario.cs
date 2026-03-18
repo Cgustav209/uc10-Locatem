@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using uc10_Locatem.API.Model;
 using uc10_Locatem.Enum;
+using uc10_Locatem.Model.DTO;
 
 namespace uc10_Locatem.Model
 {
@@ -22,11 +25,11 @@ namespace uc10_Locatem.Model
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [Required(ErrorMessage = "A senha é obrigatória")]
         [StringLength(255, ErrorMessage = "A senha deve ter no máximo 255 caracteres")]
-<<<<<<< Updated upstream
+//<<<<<<< Updated upstream
         public string Senha {  get; set; } = string.Empty;
-=======
-        public string Senha { get; set; } = string.Empty;
->>>>>>> Stashed changes
+//=======
+      //  public string Senha { get; set; } = string.Empty;
+//>>>>>>> Stashed changes
 
         public int Hash { get; set; }
 
@@ -47,8 +50,8 @@ namespace uc10_Locatem.Model
         [JsonIgnore]
         public bool Ativo { get; set; }
 
-
-        public List<Endereco> Enderecos { get; set; } = [];
+        public List<Endereco> Enderecos { get; set; } = new List<Endereco>();
+        //  public List<Endereco> Enderecos { get; set; } = [];
 
         public Usuario()
         {
@@ -56,6 +59,7 @@ namespace uc10_Locatem.Model
             Ativo = true;
         }
 
+       
         //
     }
     // exemplo de como usar Enum, enum faz algo parecido com o bool, o bool da duas opcoes true/false, agora enum pode conter mais do que dois

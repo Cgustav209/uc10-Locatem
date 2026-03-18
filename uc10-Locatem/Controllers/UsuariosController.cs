@@ -85,7 +85,8 @@ namespace uc10_Locatem.Controllers
             int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
 
             if (resultadoGravacao > 0)
-                return Created();
+                return Ok(new { usuario.Id });
+            // return Created();
 
             return BadRequest("Erro ao criar usuario");
         }
