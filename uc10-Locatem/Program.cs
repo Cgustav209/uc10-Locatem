@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using uc10_Locatem.Data;
+using uc10_Locatem.Services;
 
 namespace uc10_Locatem
 {
@@ -10,6 +11,10 @@ namespace uc10_Locatem
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddScoped<UsuarioService>();
+            builder.Services.AddScoped<TokenService>();
+
 
             // Add services to the container.
 

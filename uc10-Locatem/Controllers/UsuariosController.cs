@@ -6,6 +6,7 @@ using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
+using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
@@ -13,14 +14,18 @@ namespace uc10_Locatem.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class UsuariosController : ControllerBase
+    public class UsuariosController : ControllerBase 
     {
         private readonly AppDbContext _usuarioDbContext;
+        private readonly UsuarioService _usuarioService;
+        private readonly TokenService _tokenService;
 
 
-        public UsuariosController(AppDbContext context)
+        public UsuariosController(AppDbContext context, UsuarioService usuarioService, TokenService tokenService)
         {
             _usuarioDbContext = context;
+            _usuarioService = usuarioService;
+            _tokenService = tokenService;
         }
 
         [HttpGet("GetAll")]
@@ -158,6 +163,75 @@ namespace uc10_Locatem.Controllers
 
             return Ok(new { usuario.FotoPerfilUrl });
         }
+
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginDTO dadosUsuario)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Busca usuário pelo email
+            var usuario = await _usuarioService.GetUserByEmail(dadosUsuario.Email);
+
+            if (usuario == null || usuario.Senha != dadosUsuario.Senha)
+            {
+                return Unauthorized();
+            }
+
+            // AQUI ENTRA O TOKEN
+            var token = _tokenService.GerarToken(usuario);
+
+            return Ok(new { token });
+        }
+
+        [Authorize]
+        [HttpPut("alterarSenha")]
+        public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaDTO dadosUsuario)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Pega ID do usuário logado (quando tiver JWT)
+            var usuarioId = User.FindFirst("id")?.Value;
+
+            if (usuarioId == null)
+            {
+                return Unauthorized("Usuário não autenticado");
+            }
+
+            int id = int.Parse(usuarioId);
+
+            // Busca usuário no banco
+            var usuario = await _usuarioDbContext.Usuario
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado");
+            }
+
+            // Valida senha atual
+            if (usuario.Senha != dadosUsuario.SenhaAtual)
+            {
+                return BadRequest("Senha atual incorreta");
+            }
+
+            // Atualiza senha
+            usuario.Senha = dadosUsuario.NovaSenha;
+
+            await _usuarioDbContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Mensagem = "Senha alterada com sucesso"
+            });
+        }
     }
 }     
-
