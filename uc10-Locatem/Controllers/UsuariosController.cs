@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using uc10_Locatem.Data;
+using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
-using uc10_Locatem.Enum;
 
 namespace uc10_Locatem.Controllers
 {
-    [ApiController]
-
+    [Authorize]
     [Route("api/[controller]")]
+    [ApiController]
 
     public class UsuariosController : ControllerBase
     {
@@ -76,7 +77,19 @@ namespace uc10_Locatem.Controllers
                 return BadRequest(ModelState);
             }
 
-            Usuario? usuarioEncontrado = await _usuarioDbContext.Usuario.FirstOrDefaultAsync(usuario => usuario.Documento == dadosUsuario.Documeto);
+            bool usuarioExiste = await _usuarioDbContext.Usuario.AnyAsync(u =>
+                u.Email == dadosUsuario.Email
+                || u.Documento == dadosUsuario.Documeto
+            );
+
+            if (usuarioExiste)
+            {
+                return Conflict(new
+                {
+                    Erro = true,
+                    Mensagem = "Já existe um usuário com esse CPF ou e-mail."
+                });
+            }
 
             Usuario usuario = new Usuario
             {
@@ -91,12 +104,23 @@ namespace uc10_Locatem.Controllers
 
             _usuarioDbContext.Usuario.Add(usuario);
 
-            int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
+            try
+            {
+                int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
 
-            if (resultadoGravacao > 0)
-                return Created();
+                if (resultadoGravacao > 0)
+                    return Created();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict(new
+                {
+                    Erro = true,
+                    Mensagem = "CPF ou e-mail já cadastrado."
+                });
+            }
 
-            return BadRequest("Erro ao criar usuario");
+            return BadRequest("Erro ao criar usuário");
         }
 
         [HttpPost("upload-foto")]
