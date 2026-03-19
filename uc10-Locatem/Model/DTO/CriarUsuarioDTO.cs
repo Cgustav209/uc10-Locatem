@@ -20,13 +20,14 @@ namespace uc10_Locatem.Model.DTO
         [Compare("Senha", ErrorMessage = "As senhas não conferem")]
         public string ConfirmarSenha { get; set; } = string.Empty;
 
-        public string Tipo { get; set; } = string.Empty;
-
-        public string Telefone { get; set; } = string.Empty;
-
-        public string Documento { get; set; } = string.Empty;
-
         public TipoUsuario TipoUsuario { get; set; }
 
+        [Required(ErrorMessage = "Telefone é obrigatório")]
+        [StringLength(11, MinimumLength = 10, ErrorMessage = "Telefone inválido")]
+        public required string Telefone { get; set; }
+
+        [Required(ErrorMessage = "Documento é obrigatório")]
+        [StringLength(14, MinimumLength = 11, ErrorMessage = "Documento inválido")]
+        public required string Documento { get; set; }
     }
 }

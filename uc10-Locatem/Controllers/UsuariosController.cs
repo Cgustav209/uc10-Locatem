@@ -27,179 +27,22 @@ namespace uc10_Locatem.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAllClientes()
-        {
-            List<Usuario> listaUsuario = await _usuarioDbContext.Usuario.
-                Include(usuario => usuario.Enderecos).
-                ToListAsync();
-
-
-            return Ok(listaUsuario);
-        }
-
-
         [HttpGet("{tipo}/{id}")]
-
         public async Task<IActionResult> GetByTipoAndId([FromRoute] string tipo, [FromRoute] int id)
         {
-            List<Usuario> listaUsuario = await _usuarioDbContext.Usuario.Include(usuario => usuario.Enderecos).
-                ToListAsync();
-
-            var usuario = listaUsuario.FirstOrDefault(usuario => usuario.Id == id && usuario.Tipo.ToLower() == tipo.ToLower());
+            var usuario = await _usuarioDbContext.Usuario.Include(u => u.Enderecos).FirstOrDefaultAsync(u =>u.Id == id && u.Tipo.ToLower() == tipo.ToLower()
+        );
 
             if (usuario == null)
             {
-                return BadRequest(
-                    new
-                    {
-                        Erro = true,
-                        Mensagem = $"O cliente com o id {id} não foi encontrado"
-                    }
-                    );
-            }
-
-            return Ok(usuario);
-        }
-
-        [HttpGet("tipo/{tipo}")]
-        public async Task<IActionResult> GetByTipo(TipoUsuario tipo)
-        {
-            var usuarios = await _usuarioDbContext.Usuario
-                .Where(u => u.TipoUsuario == tipo)
-                .ToListAsync();
-
-            return Ok(usuarios);
-        }
-
-        [AllowAnonymous]
-        [HttpPost("CriarUsuario")]
-        public async Task<ActionResult> CriarUsuario([FromBody] CriarUsuarioDTO dadosUsuario)
-        {
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            bool usuarioExiste = await _usuarioDbContext.Usuario.AnyAsync(u =>
-                u.Email == dadosUsuario.Email
-                || u.Documento == dadosUsuario.Documento
-            );
-
-            if (usuarioExiste)
-            {
-                return Conflict(new
+                return NotFound(new
                 {
                     Erro = true,
-                    Mensagem = "Já existe um usuário com esse CPF ou e-mail."
+                    Mensagem = $"Usuário com id {id} não encontrado"
                 });
             }
 
-            Usuario usuario = new Usuario
-            {
-                Nome = dadosUsuario.Nome,
-                Email = dadosUsuario.Email,
-                Senha = dadosUsuario.Senha,
-                Tipo = dadosUsuario.Tipo,
-                Telefone = dadosUsuario.Telefone,
-                Documento = dadosUsuario.Documento,
-                TipoUsuario = dadosUsuario.TipoUsuario,       
-            };
-
-            _usuarioDbContext.Usuario.Add(usuario);
-
-            await _usuarioDbContext.SaveChangesAsync();
-
-            return Ok(new
-            {
-                Mensagem = "Usuário criado com sucesso"
-            });
-
-            //try
-            //{
-            //    int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
-
-            //    if (resultadoGravacao > 0)
-            //        return Created();
-            //}
-            //catch (DbUpdateException)
-            //{
-            //    return Conflict(new
-            //    {
-            //        Erro = true,
-            //        Mensagem = "CPF ou e-mail já cadastrado."
-            //    });
-            //}
-
-            //return BadRequest("Erro ao criar usuário");
-        }
-
-        //[HttpPost("upload-foto")]
-        //public async Task<IActionResult> UploadFoto([FromForm] UsuarioFotoDTO dto)
-        //{
-        //    var usuario = await _usuarioDbContext.Usuario.FindAsync(dto.UsuarioId);
-
-        //    if (usuario == null)
-        //        return NotFound("Usuário não encontrado");
-
-        //    if (dto.Foto == null || dto.Foto.Length == 0)
-        //        return BadRequest("Arquivo inválido");
-
-        //    var nomeArquivo = Guid.NewGuid().ToString()
-        //        + Path.GetExtension(dto.Foto.FileName);
-
-        //    var pasta = Path.Combine(
-        //        Directory.GetCurrentDirectory(),
-        //        "wwwroot/uploads/usuarios"
-        //    );
-
-        //    if (!Directory.Exists(pasta))
-        //        Directory.CreateDirectory(pasta);
-
-        //    var caminho = Path.Combine(pasta, nomeArquivo);
-
-        //    using (var stream = new FileStream(caminho, FileMode.Create))
-        //    {
-        //        await dto.Foto.CopyToAsync(stream);
-        //    }
-
-        //    usuario.FotoPerfilUrl = $"/uploads/usuarios/{nomeArquivo}";
-
-        //    await _usuarioDbContext.SaveChangesAsync();
-
-        //    return Ok(new { usuario.FotoPerfilUrl });
-        //}
-
-
-        [HttpPost("login")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDTO dadosUsuario)
-        {
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // Busca usuário pelo email
-            var usuario = await _usuarioService.GetUserByEmail(dadosUsuario.Email);
-
-            if (usuario == null || usuario.Senha != dadosUsuario.Senha)
-            {
-                return Unauthorized();
-            }
-
-            // AQUI ENTRA O TOKEN
-            var token = _tokenService.GerarToken(usuario);
-
-            return Ok(new
-            {
-                Mensagem = "Login realizado com sucesso",
-                Nome = usuario.Nome,
-                TipoUsuario = usuario.TipoUsuario.ToString(),
-                Token = token,
-            });
+            return Ok(usuario);
         }
 
         [Authorize]
@@ -222,8 +65,7 @@ namespace uc10_Locatem.Controllers
             int id = int.Parse(usuarioId);
 
             // Busca usuário no banco
-            var usuario = await _usuarioDbContext.Usuario
-                .FirstOrDefaultAsync(u => u.Id == id);
+            var usuario = await _usuarioDbContext.Usuario.FirstOrDefaultAsync(u => u.Id == id);
 
             if (usuario == null)
             {
@@ -231,13 +73,13 @@ namespace uc10_Locatem.Controllers
             }
 
             // Valida senha atual
-            if (usuario.Senha != dadosUsuario.SenhaAtual)
+            if (!BCrypt.Net.BCrypt.Verify(dadosUsuario.SenhaAtual, usuario.Senha))
             {
                 return BadRequest("Senha atual incorreta");
             }
 
-            // Atualiza senha
-            usuario.Senha = dadosUsuario.NovaSenha;
+            // Gerar uma nova senha e um hash para ela
+            usuario.Senha = BCrypt.Net.BCrypt.HashPassword(dadosUsuario.NovaSenha);
 
             await _usuarioDbContext.SaveChangesAsync();
 

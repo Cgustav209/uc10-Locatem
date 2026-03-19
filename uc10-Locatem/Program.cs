@@ -13,6 +13,7 @@ namespace uc10_Locatem
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<UsuarioService>();
+            builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<TokenService>();
 
 

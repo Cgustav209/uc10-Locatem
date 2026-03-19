@@ -35,7 +35,7 @@ namespace uc10_Locatem.Services
             string audience = _configuration["Jwt:Audience"]!;
 
             // Tempo de expiração do token (em horas)
-            int expiracaoHoras = int.Parse(_configuration["Jwt:ExpireHours"]!);
+            int expiracaoHoras = int.Parse(_configuration["Jwt:ExpireMinutes"]!);
 
             // Convertemos a chave secreta para bytes, pois o algoritimo de assinatura do token espera uma chave em formato de bytes
             var chaveBytes = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(chaveSecreta));
