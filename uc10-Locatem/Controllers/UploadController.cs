@@ -51,6 +51,9 @@ namespace uc10_Locatem.Controllers
 
             var pathBanco = $"Uploads/{nomeArquivo}";
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var urlCompleta = $"{baseUrl}/{pathBanco}";
+
             var perfil = _context.UsuarioPerfis
                 .FirstOrDefault(p => p.UsuarioId == dto.UsuarioId);
 
@@ -59,14 +62,15 @@ namespace uc10_Locatem.Controllers
                 perfil = new UsuarioPerfil
                 {
                     UsuarioId = dto.UsuarioId,
-                    UrlFoto = pathBanco
+                    UrlFoto = urlCompleta
+                    // UrlFoto = pathBanco
                 };
 
                 _context.UsuarioPerfis.Add(perfil);
             }
             else
             {
-                perfil.UrlFoto = pathBanco;
+                perfil.UrlFoto = urlCompleta;
             }
 
             await _context.SaveChangesAsync();
@@ -74,6 +78,6 @@ namespace uc10_Locatem.Controllers
             return Ok(new
             {
                 arquivo = nomeArquivo,
-                path = pathBanco
+                urlFoto = urlCompleta
             });
 }   }   }
