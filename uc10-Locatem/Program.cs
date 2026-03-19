@@ -18,6 +18,8 @@ namespace uc10_Locatem
             builder.Services.AddScoped<TokenService>();
 
 
+
+
             // Add services to the container.
 
 
