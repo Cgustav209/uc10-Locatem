@@ -28,9 +28,9 @@ namespace uc10_Locatem.Controllers
         }
 
         [HttpGet("{tipo}/{id}")]
-        public async Task<IActionResult> GetByTipoAndId([FromRoute] string tipo, [FromRoute] int id)
+        public async Task<IActionResult> GetByTipoAndId(TipoUsuario tipo, int id)
         {
-            var usuario = await _usuarioDbContext.Usuario.Include(u => u.Enderecos).FirstOrDefaultAsync(u =>u.Id == id && u.Tipo.ToLower() == tipo.ToLower()
+            var usuario = await _usuarioDbContext.Usuario.Include(u => u.Enderecos).FirstOrDefaultAsync(u => u.Id == id && u.TipoUsuario == tipo
         );
 
             if (usuario == null)
