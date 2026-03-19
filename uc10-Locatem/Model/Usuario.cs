@@ -25,11 +25,8 @@ namespace uc10_Locatem.Model
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [Required(ErrorMessage = "A senha é obrigatória")]
         [StringLength(255, ErrorMessage = "A senha deve ter no máximo 255 caracteres")]
-//<<<<<<< Updated upstream
+
         public string Senha {  get; set; } = string.Empty;
-//=======
-      //  public string Senha { get; set; } = string.Empty;
-//>>>>>>> Stashed changes
 
         public int Hash { get; set; }
 
@@ -37,7 +34,7 @@ namespace uc10_Locatem.Model
         public string Telefone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Escolha um Tipo")]
-        public string Tipo { get; set; } = string.Empty;
+        public TipoUsuario TipoUsuario { get; set; } 
 
 
         [Required(ErrorMessage = "Documento é obrigatorio")]
