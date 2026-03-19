@@ -16,6 +16,17 @@ namespace uc10_Locatem.Data
         }
 
         public DbSet<Usuario> Usuario { get; set; } // Cria uma tabela chamada Usuario baseada na classe Usuario
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.Documento)
+                .IsUnique();
+        }
+
 
         public DbSet<Endereco> Endereco { get; set; } // Cria uma tabela chamada Endereco baseada na classe Endereco
 
