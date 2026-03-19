@@ -16,5 +16,7 @@ namespace uc10_Locatem.Data
 
         public DbSet<Ferramenta> Ferramenta { get; set; }
 
+        public DbSet<Categorias> Categorias { get; set; }
+
     }
 }

@@ -34,7 +34,7 @@ namespace uc10_Locatem.Model
         public DateTime DataCadastro { get; set; }
 
         //categorias da entidade categorias
-        public List<Categorias> Categorias { get; set; } = [];
+        public int CategoriaId { get; set; }
 
         public int UsuarioId { get; set; }
 
@@ -43,6 +43,11 @@ namespace uc10_Locatem.Model
         [ForeignKey(nameof(UsuarioId))]
         [JsonIgnore]
         public Usuario Usuario { get; set; } = null!;
+
+        [ForeignKey(nameof(CategoriaId))]
+        [JsonIgnore]
+        public Categorias categoria { get; set; } = null!;
+
 
 
     }

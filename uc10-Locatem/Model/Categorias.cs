@@ -10,12 +10,6 @@ namespace uc10_Locatem.Model
     {
         [Key]
         public int Id { get; set; }
-
-
-        public int FerramentaId { get; set; }
-
-        [ForeignKey(nameof(FerramentaId))]
-        [JsonIgnore]
-        public Ferramenta Ferramenta { get; set; } = null!;
+        public string nome { get; set; } = string.Empty;
     }
 }

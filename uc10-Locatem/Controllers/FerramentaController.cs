@@ -27,9 +27,33 @@ namespace uc10_Locatem.Controllers
         }
 
         [HttpPost("CadastrarFerramenta")]
-        public async Task<ActionResult> CadastrarFerramenta([FromBody]) CadastrarFerramentaDTO dadosFerramentas){
-            
+        public async Task<ActionResult> CadastrarFerramenta([FromBody] CadastrarFerramentaDTO dadosFerramenta){
+             if (!ModelState.IsValid) 
+            {
+             return BadRequest(ModelState);
             }
+
+            Ferramenta novaFerramenta = new Ferramenta
+            {
+                Nome = dadosFerramenta.Nome,
+                Marca = dadosFerramenta.Marca,
+                Modelo = dadosFerramenta.Modelo,
+                Descricao = dadosFerramenta.Descricao,
+                Acessorios = dadosFerramenta.Acessorios,
+                Diaria = dadosFerramenta.Diaria,
+                Caucao = dadosFerramenta.Caucao,
+                CategoriaId = dadosFerramenta.CategoriaId,
+                UsuarioId = dadosFerramenta.UsuarioId,
+            };
+
+            _ferramentaDbContext.Ferramenta.Add(novaFerramenta);
+            int resultadoInsercao = await _ferramentaDbContext.SaveChangesAsync();
+
+            if (resultadoInsercao > 0)
+                return Created();
+            return BadRequest("Ferramenta não foi registrada!");
+        }
+            
 
     
 
