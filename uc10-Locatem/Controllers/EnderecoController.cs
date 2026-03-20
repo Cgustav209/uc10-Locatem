@@ -17,7 +17,6 @@ namespace uc10_Locatem.Controllers
     {
         private readonly AppDbContext _enderecoDbContext;
 
-        public readonly AppDbContext _enderecoDbContext;
 
         public EnderecoController(AppDbContext context)
         {

@@ -55,7 +55,7 @@ namespace uc10_Locatem.Services
         public async Task<(bool sucesso, string mensagem)> AceitarReserva(int reservaId, int usuarioId)
         {
             // Carregar a reserva junto com o produto relacionado para verificar o dono da ferramenta
-            var reserva = await _context.Reserva.Include(r => r.Produto).FirstOrDefaultAsync(r => r.Id == reservaId);
+            var reserva = await _context.Reserva.Include(r => r.Ferramenta).FirstOrDefaultAsync(r => r.Id == reservaId);
 
             // Verificar se a reserva existe
             if (reserva == null)
@@ -63,8 +63,8 @@ namespace uc10_Locatem.Services
                 return (false, "Reserva não encontrada.");
             }
             // Verificar se o usuário é o dono da ferramenta
-            var produto = await _context.Produto.FindAsync(reserva.FerramentaId);
-            if (produto.UsuarioId != usuarioId)
+            var ferramenta = await _context.Ferramenta.FindAsync(reserva.FerramentaId);
+            if (ferramenta.UsuarioId != usuarioId)
             {
                 return (false, "Você não tem permissão para aceitar esta reserva.");
             }
@@ -84,7 +84,7 @@ namespace uc10_Locatem.Services
         public async Task<(bool sucesso, string mensagem)> RecusarReserva(int reservaId, int usuarioId)
         {
             // Carregar a reserva junto com o produto relacionado para verificar o dono da ferramenta
-            var reserva = await _context.Reserva.Include(r => r.Produto).FirstOrDefaultAsync(r => r.Id == reservaId);
+            var reserva = await _context.Reserva.Include(r => r.Ferramenta).FirstOrDefaultAsync(r => r.Id == reservaId);
 
             // Verificar se a reserva existe
             if (reserva == null)
@@ -92,7 +92,7 @@ namespace uc10_Locatem.Services
                 return (false, "Reserva não encontrada.");
             }
             // Verificar se o usuário é o dono da ferramenta
-            if (reserva.produto.UsuarioId != usuarioId)
+            if (reserva.Ferramenta.UsuarioId != usuarioId)
             {
                 return (false, "Você não tem permissão para recusar esta reserva.");
             }
@@ -112,12 +112,12 @@ namespace uc10_Locatem.Services
         public async Task<List<Reserva>> ListarReservasDoUsuario(int usuarioId)
         {
             // Carregar as reservas do usuário junto com os produtos relacionados para exibir detalhes da ferramenta
-            return await _context.Reserva.Include(r => r.Produto).Where(r => r.UsuarioId == usuarioId).ToListAsync();
+            return await _context.Reserva.Include(r => r.Ferramenta).Where(r => r.UsuarioId == usuarioId).ToListAsync();
         }
 
         public async Task<List<Reserva>> ListarResrvasRecebidas(int usuarioId)
         {
-            return await _context.Reserva.Include(r => r.Usuario).Where(r => r.Produto.UsuarioId == usuarioId).ToListAsync();
+            return await _context.Reserva.Include(r => r.Usuario).Where(r => r.Ferramenta.UsuarioId == usuarioId).ToListAsync();
         }
     }
 }

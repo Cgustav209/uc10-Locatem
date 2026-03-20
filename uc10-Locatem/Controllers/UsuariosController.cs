@@ -112,7 +112,7 @@ namespace uc10_Locatem.Controllers
                 Nome = dadosUsuario.Nome,
                 Email = dadosUsuario.Email,
                 Telefone = dadosUsuario.Telefone,
-                Tipo = dadosUsuario.Tipo,
+                TipoUsuario = dadosUsuario.TipoUsuario,
                 Documento = dadosUsuario.Documento
             };
 

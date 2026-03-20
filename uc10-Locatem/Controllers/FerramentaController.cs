@@ -40,8 +40,8 @@ namespace uc10_Locatem.Controllers
                 Modelo = dadosFerramenta.Modelo,
                 Descricao = dadosFerramenta.Descricao,
                 Acessorios = dadosFerramenta.Acessorios,
-                Diaria = dadosFerramenta.Diaria,
-                Caucao = dadosFerramenta.Caucao,
+                PrecoDiaria = dadosFerramenta.PrecoDiaria,
+                PrecoCaucao = dadosFerramenta.PrecoCaucao,
                 CategoriaId = dadosFerramenta.CategoriaId,
                 UsuarioId = dadosFerramenta.UsuarioId,
             };

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using uc10_Locatem.Enum;
 
+
 namespace uc10_Locatem.Model
 {
     public class Reserva
@@ -21,6 +22,9 @@ namespace uc10_Locatem.Model
 
         [ForeignKey(nameof(UsuarioId))]
         public Usuario Usuario { get; set; } = null!;
-        
+
+        [ForeignKey(nameof(FerramentaId))]
+        public Ferramenta Ferramenta { get; set; } = null!;
+
     }
 }

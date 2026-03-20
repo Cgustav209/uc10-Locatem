@@ -5,6 +5,7 @@ using uc10_Locatem.Enum;
 using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.Model;
 using uc10_Locatem.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace uc10_Locatem.Controllers
 {
@@ -12,6 +13,7 @@ namespace uc10_Locatem.Controllers
     [Route("api/[controller]")]
     public class ReservasController : ControllerBase
     {
+        private readonly AppDbContext _ReservaDbContext;
 
         private readonly ReservaService _reservaService;
 
@@ -22,32 +24,28 @@ namespace uc10_Locatem.Controllers
             _reservaService = reservaService;
         }
 
-        // Injeção de dependência do AppDbContext para acessar o banco de dados
-        private readonly AppDbContext _ReservaDbContext;
 
-        public ReservasController(AppDbContext context)
-        {
-            _ReservaDbContext = context;
-        }
-        //====================================================
 
+        
         [HttpPost("criarReserva")]
         public async Task<IActionResult> CriarReserva([FromBody] CriarReservaDTO dadosReserva)
         {
+            var usuarioId = int.Parse(User.FindFirst("id").Value);
+
             // Verificar se a ferramenta existe
 
-            var produto = await _ReservaDbContext.Produto.FindAsync(dadosReserva.FerramentaId);
+            var ferramenta = await _ReservaDbContext.Ferramenta.FindAsync(dadosReserva.FerramentaId);
 
             // Se a ferramenta não existir, retornar um erro 404, que o  de não encontrado.
 
-            if (produto == null)
+            if (ferramenta == null)
             {
-                return NotFound("Produto não encontrado.");
+                return NotFound("Ferramenta não encontrada.");
             }
 
             // Impede a pessoa de reservar sua própria ferramenta
 
-            if (produto.UsuarioId == dadosReserva.UsuarioId)
+            if (ferramenta.UsuarioId == dadosReserva.UsuarioId)
             {
                 return BadRequest("Não é possível reservar sua própria ferramenta.");
 
@@ -80,7 +78,7 @@ namespace uc10_Locatem.Controllers
                 DataInicio = dadosReserva.DataInicio,
                 DataFim = dadosReserva.DataFim,
                 Status = StatusReserva.Pendente,
-                DataCriacao = DateTime.Now
+                DataCriacao = DateTime.UtcNow
             };
 
             _ReservaDbContext.Reserva.Add(reserva);
@@ -89,7 +87,7 @@ namespace uc10_Locatem.Controllers
             return Ok(reserva);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("cancelar/{id}")]
         public async Task<IActionResult> CancelarReserva(int id)
         {
@@ -108,7 +106,7 @@ namespace uc10_Locatem.Controllers
 
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("aceitar/{id}")]
         public async Task<IActionResult> AceitarReserva(int id)
         {
@@ -126,7 +124,7 @@ namespace uc10_Locatem.Controllers
 
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("recusar/{id}")]
         public async Task<IActionResult> RecusarReserva(int id)
         {
@@ -141,7 +139,7 @@ namespace uc10_Locatem.Controllers
             return Ok(mensagem);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("minhasReservas")]
         public async Task<IActionResult> MinhasReservas()
         {
@@ -155,7 +153,7 @@ namespace uc10_Locatem.Controllers
             return Ok(reservas);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("reservasRecebidas")]
         public async Task<IActionResult> ReservasRecebidas()
         {
