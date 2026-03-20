@@ -22,6 +22,21 @@ namespace uc10_Locatem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AcessorioFerramenta", b =>
+                {
+                    b.Property<int>("AcessoriosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FerramentasFerramentaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AcessoriosId", "FerramentasFerramentaId");
+
+                    b.HasIndex("FerramentasFerramentaId");
+
+                    b.ToTable("AcessorioFerramenta");
+                });
+
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
                 {
                     b.Property<int>("Id")
@@ -77,6 +92,58 @@ namespace uc10_Locatem.Migrations
                     b.ToTable("Endereco");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.Acessorio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Acessorio");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.Aluguel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataFim")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FerramentaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LocadorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LocatarioId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Alugueis");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.Categorias", b =>
                 {
                     b.Property<int>("Id")
@@ -101,10 +168,6 @@ namespace uc10_Locatem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FerramentaId"));
-
-                    b.Property<string>("Acessorios")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
@@ -167,10 +230,8 @@ namespace uc10_Locatem.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FotoPerfilUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("Hash")
                         .HasColumnType("int");
@@ -182,13 +243,10 @@ namespace uc10_Locatem.Migrations
 
                     b.Property<string>("Senha")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Telefone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Tipo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -204,6 +262,48 @@ namespace uc10_Locatem.Migrations
                         .IsUnique();
 
                     b.ToTable("Usuario");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.UsuarioPerfil", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Telefone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoUsuario")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlFoto")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("UsuarioPerfis");
+                });
+
+            modelBuilder.Entity("AcessorioFerramenta", b =>
+                {
+                    b.HasOne("uc10_Locatem.Model.Acessorio", null)
+                        .WithMany()
+                        .HasForeignKey("AcessoriosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("uc10_Locatem.Model.Ferramenta", null)
+                        .WithMany()
+                        .HasForeignKey("FerramentasFerramentaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
@@ -234,6 +334,17 @@ namespace uc10_Locatem.Migrations
                     b.Navigation("Usuario");
 
                     b.Navigation("categoria");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.UsuarioPerfil", b =>
+                {
+                    b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.Usuario", b =>

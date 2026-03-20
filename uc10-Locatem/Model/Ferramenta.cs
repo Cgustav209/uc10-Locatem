@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using uc10_Locatem.Model.DTO;
 
 
 namespace uc10_Locatem.Model
@@ -22,8 +23,7 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public string Descricao { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public string Acessorios { get; set; } = string.Empty;
+        public List<string>? Acessorios { get; set; } = new();
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public int Diaria { get; set; }
