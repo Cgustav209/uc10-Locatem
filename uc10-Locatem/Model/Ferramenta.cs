@@ -10,26 +10,26 @@ namespace uc10_Locatem.Model
         [Key]
         public int FerramentaId { get; set; }
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Required(ErrorMessage = "Campo Obrigatório")]
         public string Nome { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Required(ErrorMessage = "Campo Obrigatório")]
         public string Marca { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Required(ErrorMessage = "Campo Obrigatório")]
         public string Modelo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Required(ErrorMessage = "Campo Obrigatório")]
         public string Descricao { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public string Acessorios { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Campo Obrigatório")]
+        public List<string> Acessorios { get; set; } = ["broca 8mm", "mandril para troca de de broca", "carregador da bateria"];
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public int Diaria { get; set; }
+        [Required(ErrorMessage = "Campo Obrigatório")]
+        public int PrecoDiaria { get; set; }
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public int Caucao { get; set; }
+        [Required(ErrorMessage = "Campo Obrigatório")]
+        public int PrecoCaucao { get; set; }
 
         public DateTime DataCadastro { get; set; }
 

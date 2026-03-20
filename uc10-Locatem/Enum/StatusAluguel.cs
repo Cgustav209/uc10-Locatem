@@ -3,6 +3,7 @@
     public enum StatusAluguel
     {
         AguardandoPagamento,
+        PagoAguardandoRetirada, 
         Ativo,
         Finalizado,
         Cancelado,

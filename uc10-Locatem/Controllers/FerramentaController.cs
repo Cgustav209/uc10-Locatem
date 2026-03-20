@@ -29,9 +29,9 @@ namespace uc10_Locatem.Controllers
         [HttpPost("CadastrarFerramenta")]
         public async Task<ActionResult> CadastrarFerramenta([FromBody] CadastrarFerramentaDTO dadosFerramenta){
              if (!ModelState.IsValid) 
-            {
-             return BadRequest(ModelState);
-            }
+             {
+                return BadRequest(ModelState);
+             }
 
             Ferramenta novaFerramenta = new Ferramenta
             {
@@ -40,8 +40,8 @@ namespace uc10_Locatem.Controllers
                 Modelo = dadosFerramenta.Modelo,
                 Descricao = dadosFerramenta.Descricao,
                 Acessorios = dadosFerramenta.Acessorios,
-                Diaria = dadosFerramenta.Diaria,
-                Caucao = dadosFerramenta.Caucao,
+                PrecoDiaria = dadosFerramenta.PrecoDiaria,
+                PrecoCaucao = dadosFerramenta.PrecoCaucao,
                 CategoriaId = dadosFerramenta.CategoriaId,
                 UsuarioId = dadosFerramenta.UsuarioId,
             };
@@ -53,11 +53,5 @@ namespace uc10_Locatem.Controllers
                 return Created();
             return BadRequest("Ferramenta não foi registrada!");
         }
-            
-
-    
-
-       
-
     }
 }

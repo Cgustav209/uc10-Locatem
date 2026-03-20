@@ -6,6 +6,7 @@ using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
