@@ -6,30 +6,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace uc10_Locatem.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-    public partial class init : Migration
-========
-    public partial class InitialCreate : Migration
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Alugueis",
+                name: "Categorias",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FerramentaId = table.Column<int>(type: "int", nullable: false),
-                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    nome = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Alugueis", x => x.Id);
+                    table.PrimaryKey("PK_Categorias", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,23 +30,12 @@ namespace uc10_Locatem.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
                     Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-========
-                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
                     Senha = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Hash = table.Column<int>(type: "int", nullable: false),
                     Telefone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-========
-                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
-                    FotoPerfilUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
                     Documento = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false)
@@ -92,23 +73,33 @@ namespace uc10_Locatem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reserva",
+                name: "Ferramenta",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    FerramentaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProdutolId = table.Column<int>(type: "int", nullable: false),
-                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Marca = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Modelo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Acessorios = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Diaria = table.Column<int>(type: "int", nullable: false),
+                    Caucao = table.Column<int>(type: "int", nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CategoriaId = table.Column<int>(type: "int", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reserva", x => x.Id);
+                    table.PrimaryKey("PK_Ferramenta", x => x.FerramentaId);
                     table.ForeignKey(
-                        name: "FK_Reserva_Usuario_UsuarioId",
+                        name: "FK_Ferramenta_Categorias_CategoriaId",
+                        column: x => x.CategoriaId,
+                        principalTable: "Categorias",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ferramenta_Usuario_UsuarioId",
                         column: x => x.UsuarioId,
                         principalTable: "Usuario",
                         principalColumn: "Id",
@@ -121,35 +112,27 @@ namespace uc10_Locatem.Migrations
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-                name: "IX_Reserva_UsuarioId",
-                table: "Reserva",
-                column: "UsuarioId");
-========
-                name: "IX_Usuario_Documento",
-                table: "Usuario",
-                column: "Documento",
-                unique: true);
+                name: "IX_Ferramenta_CategoriaId",
+                table: "Ferramenta",
+                column: "CategoriaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuario_Email",
-                table: "Usuario",
-                column: "Email",
-                unique: true);
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
+                name: "IX_Ferramenta_UsuarioId",
+                table: "Ferramenta",
+                column: "UsuarioId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Alugueis");
-
-            migrationBuilder.DropTable(
                 name: "Endereco");
 
             migrationBuilder.DropTable(
-                name: "Reserva");
+                name: "Ferramenta");
+
+            migrationBuilder.DropTable(
+                name: "Categorias");
 
             migrationBuilder.DropTable(
                 name: "Usuario");

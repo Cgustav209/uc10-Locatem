@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace uc10_Locatem.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-    public partial class init : Migration
-========
-    public partial class InitialCreate : Migration
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
+    public partial class AddUsuarioPerfil : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,11 +21,26 @@ namespace uc10_Locatem.Migrations
                     DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    LocadorId = table.Column<int>(type: "int", nullable: false),
+                    LocatarioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Alugueis", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ferramenta",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ferramenta", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,23 +49,12 @@ namespace uc10_Locatem.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
                     Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-========
-                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
-                    Senha = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Senha = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Hash = table.Column<int>(type: "int", nullable: false),
                     Telefone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-========
-                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
-                    FotoPerfilUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
                     Documento = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false)
@@ -92,23 +92,21 @@ namespace uc10_Locatem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reserva",
+                name: "UsuarioPerfis",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProdutolId = table.Column<int>(type: "int", nullable: false),
-                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UsuarioId = table.Column<int>(type: "int", nullable: false)
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    Telefone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TipoUsuario = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UrlFoto = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reserva", x => x.Id);
+                    table.PrimaryKey("PK_UsuarioPerfis", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reserva_Usuario_UsuarioId",
+                        name: "FK_UsuarioPerfis_Usuario_UsuarioId",
                         column: x => x.UsuarioId,
                         principalTable: "Usuario",
                         principalColumn: "Id",
@@ -121,22 +119,9 @@ namespace uc10_Locatem.Migrations
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-<<<<<<<< HEAD:uc10-Locatem/Migrations/20260313192622_init.cs
-                name: "IX_Reserva_UsuarioId",
-                table: "Reserva",
+                name: "IX_UsuarioPerfis_UsuarioId",
+                table: "UsuarioPerfis",
                 column: "UsuarioId");
-========
-                name: "IX_Usuario_Documento",
-                table: "Usuario",
-                column: "Documento",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Usuario_Email",
-                table: "Usuario",
-                column: "Email",
-                unique: true);
->>>>>>>> master:uc10-Locatem/Migrations/20260318195616_InitialCreate.cs
         }
 
         /// <inheritdoc />
@@ -149,7 +134,10 @@ namespace uc10_Locatem.Migrations
                 name: "Endereco");
 
             migrationBuilder.DropTable(
-                name: "Reserva");
+                name: "Ferramenta");
+
+            migrationBuilder.DropTable(
+                name: "UsuarioPerfis");
 
             migrationBuilder.DropTable(
                 name: "Usuario");

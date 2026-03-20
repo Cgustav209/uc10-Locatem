@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.API.Model;
+using uc10_Locatem.API.Model.DTO;
 using uc10_Locatem.Data;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
 using uc10_Locatem.Enum;
+
 
 namespace uc10_Locatem.Controllers
 {
@@ -15,6 +17,8 @@ namespace uc10_Locatem.Controllers
     {
         private readonly AppDbContext _enderecoDbContext;
 
+        public readonly AppDbContext _enderecoDbContext;
+
         public EnderecoController(AppDbContext context)
         {
             _enderecoDbContext = context;
@@ -23,37 +27,39 @@ namespace uc10_Locatem.Controllers
         [HttpGet("GetAllEnderecos")]
         public async Task<IActionResult> GetAllEnderecos()
         {
+
             List<Endereco> listaEnderecos = await _enderecoDbContext.Endereco.ToListAsync();
 
             return Ok(listaEnderecos);
         }
 
-        [HttpPost("CriarEndereco")]
-        public async Task<IActionResult> CriarEndereco([FromBody] CriarEnderecoDTO dadosEndereco)
+        [HttpPost("Criar endereço")]
+
+        public async Task<IActionResult> CriarEndereco([FromBody] CriarEnderecoDTO dadodEndereco)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) 
             {
-                return BadRequest(ModelState);
+             return BadRequest(ModelState);
             }
 
-            Usuario? clienteEncontrado = await _enderecoDbContext.Usuario.FirstOrDefaultAsync(usuario => usuario.Id == dadosEndereco.ClienteId);
+           Usuario? usuarioEncontrado = await _enderecoDbContext.Usuario.FirstOrDefaultAsync(usuario => usuario.Id == dadodEndereco.UsuarioId);
 
-            if (clienteEncontrado == null)
+            if (usuarioEncontrado == null)
             {
-                return NotFound($"Cliente com ID {dadosEndereco.ClienteId} não encontrado.");
+                return BadRequest($"Usuario com ID {dadodEndereco.UsuarioId} não encontrado");
             }
 
-            Endereco novoEndereco = new Endereco
+            Endereco novoEndereco = new Endereco 
             {
-                Logradouro = dadosEndereco.Logradouro,
-                Numero = dadosEndereco.Numero,
-                Complemento = dadosEndereco.Complemento,
-                Bairro = dadosEndereco.Bairro,
-                Cidade = dadosEndereco.Cidade,
-                Estado = dadosEndereco.Estado,
-                CEP = dadosEndereco.CEP,
-                TipoEndereco = dadosEndereco.TipoEndereco,
-                UsuarioId = dadosEndereco.ClienteId
+                Logradouro = dadodEndereco.Logradouro,
+                Numero = dadodEndereco.Numero,
+                Complemento = dadodEndereco.Complemento,
+                Bairro = dadodEndereco.Bairro,
+                Cidade = dadodEndereco.Cidade,
+                Estado = dadodEndereco.Estado,
+                CEP = dadodEndereco.CEP,
+                TipoEndereco = dadodEndereco.TipoEndereco,
+                UsuarioId = dadodEndereco.UsuarioId,
             };
 
             _enderecoDbContext.Endereco.Add(novoEndereco);
@@ -61,8 +67,7 @@ namespace uc10_Locatem.Controllers
 
             if (resultadoInsercao > 0)
                 return Created();
-
-            return BadRequest("Endereço não foi registrado");
+            return BadRequest("Endereço não foi registrada!");
         }
     }
 }
