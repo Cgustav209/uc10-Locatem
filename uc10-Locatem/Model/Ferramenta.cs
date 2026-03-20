@@ -9,11 +9,9 @@ namespace uc10_Locatem.Model
     {
 
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; } = default!;       // ou Nome
         public string Slug { get; set; } = default!;       // novo
-
-        
         public int CategoriaId { get; set; }              // novo
         public Categoria Categoria { get; set; } = default!; // novo
 

@@ -16,7 +16,8 @@ namespace uc10_Locatem
             builder.Services.AddScoped<UsuarioService>();
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<TokenService>();
-
+            builder.Services.AddScoped<CategoriaService>();
+            
 
 
 

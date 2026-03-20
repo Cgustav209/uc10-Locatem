@@ -15,6 +15,8 @@ namespace uc10_Locatem.Data
         { 
         }
 
+        public DbSet<Categoria> Categorias { get; set; } = null!;
+
         public DbSet<Usuario> Usuario { get; set; } // Cria uma tabela chamada Usuario baseada na classe Usuario
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
