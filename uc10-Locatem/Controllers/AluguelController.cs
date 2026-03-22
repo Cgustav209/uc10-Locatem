@@ -37,7 +37,7 @@ namespace uc10_Locatem.Controllers
             // 4. Retorna JSON
         }
 
-        [HttpPost("Criar Aluguel")]
+        [HttpPost("CriarAluguel")]
         // [FromBody] = os dados virão no corpo da requisição em JSON.
         public async Task<IActionResult> CriarAluguel([FromBody] CriarAluguelDTO dadosAluguel)
         {
@@ -48,20 +48,19 @@ namespace uc10_Locatem.Controllers
             }
 
             // Verifica se a ferramenta existe. Isso evita criar aluguel de algo que não existe no banco.
-            Ferramenta? ferramentaEncontrada = await _aluguelDbContext.Ferramenta.FirstOrDefaultAsync(f => f.Id == dadosAluguel.FerramentaId);
+            //Ferramenta? ferramentaEncontrada = await _aluguelDbContext.Ferramenta.FirstOrDefaultAsync(f => f.Id == dadosAluguel.FerramentaId);
 
-            if (ferramentaEncontrada == null)
-            {
-                return BadRequest($"Ferramenta com ID {dadosAluguel.FerramentaId} não encontrada");
-            }
+            //if (ferramentaEncontrada == null)
+            //{
+            //    return BadRequest($"Ferramenta com ID {dadosAluguel.FerramentaId} não encontrada");
+            //}
 
             // Criar objeto Aluguel
             // Esse objeto representa uma linha na tabela Aluguel.
             Aluguel novoAluguel = new Aluguel
             {
                 FerramentaId = dadosAluguel.FerramentaId,
-                LocadorId = dadosAluguel.LocadorId,
-                LocatarioId = dadosAluguel.LocatarioId,
+                UsuarioId = dadosAluguel.UsuarioId,
                 DataInicio = dadosAluguel.DataInicio,
                 DataFim = dadosAluguel.DataFim,
                 Status = StatusAluguel.AguardandoPagamento
