@@ -26,13 +26,12 @@ namespace uc10_Locatem.Model
         public List<string>? Acessorios { get; set; } = new();
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Range(1, int.MaxValue, ErrorMessage = "A diária não pode ser abaixo de zero.")]
         public int Diaria { get; set; }
-
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public int Caucao { get; set; }
 
         public DateTime DataCadastro { get; set; }
 
+        [Required(ErrorMessage = "Campo Obrigatorio")]
         //categorias da entidade categorias
         public int CategoriaId { get; set; }
 

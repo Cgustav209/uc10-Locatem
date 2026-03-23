@@ -74,7 +74,7 @@ namespace uc10_Locatem.Controllers
                 Descricao = dadosFerramenta.Descricao,
                 Acessorios = dadosFerramenta.Acessorios,
                 Diaria = dadosFerramenta.Diaria,
-                Caucao = dadosFerramenta.Caucao,
+
                 CategoriaId = dadosFerramenta.CategoriaId,
                 UsuarioId = id,
             };
@@ -109,7 +109,7 @@ namespace uc10_Locatem.Controllers
             ferramenta.Descricao = dadosFerramenta.Descricao;
             ferramenta.Acessorios = dadosFerramenta.Acessorios;
             ferramenta.Diaria = dadosFerramenta.Diaria;
-            ferramenta.Caucao = dadosFerramenta.Caucao;
+          
           
            
 
