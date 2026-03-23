@@ -49,6 +49,7 @@ namespace uc10_Locatem.Services
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim(ClaimTypes.Name, usuario.Nome),
                 new Claim("id", usuario.Id.ToString()),
+                //new Claim(ClaimTypes.Role, usuario.TipoUsuario.ToString().ToUpper()),
 
                 // Id único do token
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

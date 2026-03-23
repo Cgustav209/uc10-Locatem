@@ -56,8 +56,8 @@ namespace uc10_Locatem.Model
             Ativo = true;
         }
 
-       
-        //
+        // bloqueio de usuário inadimplente
+        public bool Bloqueado { get; set; }
     }
     // exemplo de como usar Enum, enum faz algo parecido com o bool, o bool da duas opcoes true/false, agora enum pode conter mais do que dois
     //enum TipoUsuario

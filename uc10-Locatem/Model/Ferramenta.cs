@@ -26,10 +26,10 @@ namespace uc10_Locatem.Model
         public string Acessorios { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
-        public int Diaria { get; set; }
+        public decimal Diaria { get; set; }
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
-        public int Caucao { get; set; }
+        public decimal Caucao { get; set; }
 
         public DateTime DataCadastro { get; set; }
 
