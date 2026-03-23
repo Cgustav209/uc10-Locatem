@@ -27,7 +27,9 @@ namespace uc10_Locatem.Model
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
         [Range(1, int.MaxValue, ErrorMessage = "A diária não pode ser abaixo de zero.")]
-        public int Diaria { get; set; }
+        public decimal Diaria { get; set; }
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        public decimal Caucao { get; set; }
 
         public DateTime DataCadastro { get; set; }
 

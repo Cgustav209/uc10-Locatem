@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.Data;
@@ -8,6 +9,7 @@ using uc10_Locatem.Model.DTO;
 
 namespace uc10_Locatem.Controllers
 {
+    [Authorize]
     [ApiController]
 
     [Route("api/[controller]")]
@@ -48,6 +50,8 @@ namespace uc10_Locatem.Controllers
         //    return Ok(ferramentas);
         //}
 
+        // n sei se ta correto
+       
         [HttpPost("CadastrarFerramenta")]
         public async Task<ActionResult> CadastrarFerramenta([FromBody] CadastrarFerramentaDTO dadosFerramenta)
         {
@@ -58,12 +62,19 @@ namespace uc10_Locatem.Controllers
 
             // Pega ID do usuário logado (quando tiver JWT)
             var locadorId = User.FindFirst("id")?.Value;
+            var UsuarioTipo = User.FindFirst("TipoUsuario")?.Value;
 
             if (locadorId == null)
             {
                 return Unauthorized("Usuário não autenticado");
             }
 
+            if (UsuarioTipo == "Locador")
+            {
+                return Unauthorized("Somente locadores podem registrar ferramenta");
+            }
+
+            
             int id = int.Parse(locadorId);
 
             Ferramenta novaFerramenta = new Ferramenta
@@ -87,6 +98,7 @@ namespace uc10_Locatem.Controllers
             return BadRequest("Ferramenta não foi registrada!");
         }
 
+      
         [HttpPut("EditarFerramenta/{id}")]
         public async Task<ActionResult> EditarFerramenta(int id, [FromBody] EditarFerramentaDTO dadosFerramenta)
         {
@@ -95,13 +107,45 @@ namespace uc10_Locatem.Controllers
                 return BadRequest(ModelState);
             }
 
-            
-            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
 
+            // Pega ID do usuário logado (quando tiver JWT)
+            var usuarioId = User.FindFirst("id")?.Value;
+            // pega o tipo do atual usuario
+            var UsuarioTipo = User.FindFirst("TipoUsuario")?.Value;
+           
+            // checa se existe
+            if (usuarioId == null)
+            {
+                return Unauthorized("Usuário não autenticado");
+            }
+
+            // checa se é do tipo desejado
+            if (UsuarioTipo != "Locador")
+            {
+                return Unauthorized("Somente locadores podem registrar ferramenta");
+            }
+
+          
+            int idUser = int.Parse(usuarioId);
+
+          
+            // puxa a ferramenta desejada pelo id
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);    
+            
             if (ferramenta == null)
             {
                 return NotFound("Ferramenta não encontrada!");
             }
+            // pega o id de quem cadastrou a ferramenta
+            int idCreator = ferramenta.UsuarioId; 
+            
+            //cheaca se é o mesmo user
+            if (idUser != idCreator) 
+            {
+                return Unauthorized("Usuário não autenticado");
+            }
+
+
 
             ferramenta.Nome = dadosFerramenta.Nome;
             ferramenta.Marca = dadosFerramenta.Marca;
