@@ -88,5 +88,42 @@ namespace uc10_Locatem.Controllers
                 Mensagem = "Senha alterada com sucesso"
             });
         }
+
+
+        [HttpPost("CriarUsuario")]
+        public async Task<IActionResult> CriarUsuario([FromBody] CriarUsuarioDTO dadosUsuario) 
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //importante: para fazer a verificação do documento.
+            // _usuarioDbContext.Usuario.FirstOrDefaultAsync(cliente => cliente.CPF == dadosCliente);
+
+            //if (clienteExistente != null)
+            //{
+            //    return BadRequest($"Já existe um cliente com esse CPF {dadosCliente.CPF}");
+            //}
+
+            var usuario = new Usuario
+            {
+                Nome = dadosUsuario.Nome,
+                Email = dadosUsuario.Email,
+                Telefone = dadosUsuario.Telefone,
+                TipoUsuario = dadosUsuario.TipoUsuario,
+                Documento = dadosUsuario.Documento
+            };
+
+            _usuarioDbContext.Usuario.Add(usuario);
+            int resultadoGravacao = await _usuarioDbContext.SaveChangesAsync();
+
+
+            if (resultadoGravacao > 0)
+                return Created();
+
+            return BadRequest("Erro ao criar usuario");
+        }
     }
 }     

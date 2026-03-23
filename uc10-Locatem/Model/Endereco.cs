@@ -48,4 +48,4 @@ namespace uc10_Locatem.API.Model
         public Usuario Usuario { get; set; } = null!;
 
     }
-    }
+}

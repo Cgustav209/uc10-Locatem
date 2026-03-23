@@ -4,16 +4,19 @@ using uc10_Locatem.API.Model;
 using uc10_Locatem.API.Model.DTO;
 using uc10_Locatem.Data;
 using uc10_Locatem.Model;
+using uc10_Locatem.Model.DTO;
+using uc10_Locatem.Enum;
 
 
 namespace uc10_Locatem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class EnderecoController : ControllerBase
     {
+        private readonly AppDbContext _enderecoDbContext;
 
-        public readonly AppDbContext _enderecoDbContext;
 
         public EnderecoController(AppDbContext context)
         {

@@ -22,6 +22,21 @@ namespace uc10_Locatem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AcessorioFerramenta", b =>
+                {
+                    b.Property<int>("AcessoriosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FerramentasFerramentaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AcessoriosId", "FerramentasFerramentaId");
+
+                    b.HasIndex("FerramentasFerramentaId");
+
+                    b.ToTable("AcessorioFerramenta");
+                });
+
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
                 {
                     b.Property<int>("Id")
@@ -136,10 +151,6 @@ namespace uc10_Locatem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FerramentaId"));
-
-                    b.Property<string>("Acessorios")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");

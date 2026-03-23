@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using uc10_Locatem.Model.DTO;
 
 
 namespace uc10_Locatem.Model
@@ -22,17 +23,15 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public string Descricao { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public string Acessorios { get; set; } = string.Empty;
+        public List<string>? Acessorios { get; set; } = new();
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Range(1, int.MaxValue, ErrorMessage = "A diária não pode ser abaixo de zero.")]
         public int Diaria { get; set; }
-
-        [Required(ErrorMessage = "Campo Obrigatorio")]
-        public int Caucao { get; set; }
 
         public DateTime DataCadastro { get; set; }
 
+        [Required(ErrorMessage = "Campo Obrigatorio")]
         //categorias da entidade categorias
         public int CategoriaId { get; set; }
 
