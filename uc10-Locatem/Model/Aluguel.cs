@@ -1,35 +1,65 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using uc10_Locatem.Enum;
+﻿using System.ComponentModel.DataAnnotations; 
+using System.ComponentModel.DataAnnotations.Schema; 
+using System.Text.Json.Serialization; 
+using uc10_Locatem.Enum; 
 
 namespace uc10_Locatem.Model
 {
+    // Representa a tabela "Aluguel" no banco de dados
     public class Aluguel
     {
-        // [ForeignKey(nameof(FerramentaId))]
-        // [JsonIgnore]
-        // public Usuario Usuario { get; set; } = null!;
+        // ================= IDENTIFICAÇÃO =================
 
-        [Key] // indica a chave primária
+        [Key] // Define como chave primária (ID único de cada aluguel)
         public int Id { get; set; }
 
-        public int FerramentaId { get; set; } // chave estrangeira = liga o aluguel com a ferramenta.
 
-        public DateTime DataInicio { get; set; } // define o período de uso.
-        public DateTime DataFim { get; set; } // define o período de uso.
+        // ================= RELACIONAMENTOS =================
 
-        public StatusAluguel Status { get; set; } = StatusAluguel.AguardandoPagamento; // define o estado do aluguel (puxa do enum "StatusAluguel.cs")
+        public int FerramentaId { get; set; } // FK → indica qual ferramenta está sendo alugada
 
-        public decimal ValorTotal { get; set; } // valor do aluguel da ferramenta
-        public decimal ValorDevolvido { get; set; }
+        public int UsuarioId { get; set; } // FK → usuário que fez o aluguel (locatário)
 
-        //para o perfil
-        public int UsuarioId { get; set;}
+        public int ReservaId { get; set; } // FK → ligação com a reserva que originou esse aluguel
 
-        public int ReservaId { get; set; }
 
-        public decimal ValorCaucao { get; set; }
+        // ================= PERÍODO DO ALUGUEL =================
+
+        public DateTime DataInicio { get; set; } // Data em que o aluguel começa
+
+        public DateTime DataFim { get; set; } // Data em que o aluguel termina
+
+
+        // ================= STATUS =================
+
+        public StatusAluguel Status { get; set; } = StatusAluguel.AguardandoPagamento;
+        // Estado atual do aluguel:
+        // AguardandoPagamento → Ativo → AguardandoConfirmacao → Finalizado / Atrasado
+
+
+        // ================= VALORES =================
+
+        public decimal ValorTotal { get; set; } // Valor total do aluguel (diárias + multa, se houver)
+
+        public decimal ValorDevolvido { get; set; } // Valor devolvido ao cliente (ex: devolução da caução)
+
+
+        // ================= CAUÇÃO =================
+
+        public decimal ValorCaucao { get; set; } // Valor da caução exigida pela ferramenta (garantia)
+
         public bool CaucaoRetida { get; set; }
+        // Indica se a caução foi retida (true) ou devolvida (false)
+        // true → houve problema (dano, atraso, etc)
+        // false → tudo certo, cliente recebe de volta
+
+
+        // ================= NAVEGAÇÃO =================
+
+        [ForeignKey(nameof(FerramentaId))] // Diz que essa propriedade usa FerramentaId como chave estrangeira
+
+        public Ferramenta Ferramenta { get; set; } = null!;
+        // Objeto completo da ferramenta (permite acessar dados como Diaria, Nome, etc)
+        // Ex: aluguel.Ferramenta.Diaria
     }
 }
