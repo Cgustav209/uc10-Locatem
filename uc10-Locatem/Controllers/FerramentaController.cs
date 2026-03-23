@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.Data;
+using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
 
@@ -26,6 +27,26 @@ namespace uc10_Locatem.Controllers
 
             return Ok(listaFerramenta);
         }
+
+        //[HttpGet("categoria/{categoriaId}")]
+        //public async Task<IActionResult> GetByCategoria(int categoriaId)
+        //{
+        //    var ferramentas = await _ferramentaDbContext.Ferramenta
+        //        .Include(f => f.categoria)
+        //        .Where(f => f.CategoriaId == categoriaId)
+        //        .ToListAsync();
+
+        //    if (!ferramentas.Any())
+        //    {
+        //        return NotFound(new
+        //        {
+        //            Erro = true,
+        //            Mensagem = "Nenhuma ferramenta encontrada para essa categoria"
+        //        });
+        //    }
+
+        //    return Ok(ferramentas);
+        //}
 
         [HttpPost("CadastrarFerramenta")]
         public async Task<ActionResult> CadastrarFerramenta([FromBody] CadastrarFerramentaDTO dadosFerramenta)
