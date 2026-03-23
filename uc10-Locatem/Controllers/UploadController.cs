@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
 using System.Linq;
@@ -20,19 +21,144 @@ namespace uc10_Locatem.Controllers
             _context = context;
         }
 
+        // =====================================================
+        // FOTO PERFIL
+        // =====================================================
         [HttpPost("foto-perfil")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadFoto([FromForm] UploadFotoDTO dto)
+        public async Task<IActionResult> UploadFotoPerfil([FromForm] UploadFotoDTO dto)
         {
             if (dto.Foto == null || dto.Foto.Length == 0)
                 return BadRequest("Arquivo inválido");
 
-            var usuarioExiste = _context.Usuario.Any(u => u.Id == dto.UsuarioId);
-            if (!usuarioExiste)
-                return BadRequest("Usuário não encontrado");
+            var usuarioExiste = await _context.Usuario
+                .AnyAsync(u => u.Id == dto.UsuarioId);
 
-            var nomeArquivo = Guid.NewGuid().ToString() +
-                Path.GetExtension(dto.Foto.FileName);
+            if (!usuarioExiste)
+                return NotFound("Usuário não encontrado");
+
+            var urlFoto = await SalvarArquivo(dto.Foto);
+
+            var perfil = await _context.UsuarioPerfis
+                .FirstOrDefaultAsync(p => p.UsuarioId == dto.UsuarioId);
+
+            if (perfil == null)
+            {
+                perfil = new UsuarioPerfil
+                {
+                    UsuarioId = dto.UsuarioId,
+                    UrlFoto = urlFoto
+                };
+
+                _context.UsuarioPerfis.Add(perfil);
+            }
+            else
+            {
+                perfil.UrlFoto = urlFoto;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                urlFoto
+            });
+        }
+
+        // =====================================================
+        // FOTO FERRAMENTA (MULTIPLAS)
+        // =====================================================
+        [HttpPost("foto-ferramenta")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadFotoFerramenta(
+            [FromForm] UploadFerramentaFotoDTO dto)
+        {
+            if (dto.Foto == null || dto.Foto.Length == 0)
+                return BadRequest("Arquivo inválido");
+
+            var ferramenta = await _context.Ferramenta
+                .FirstOrDefaultAsync(f => f.FerramentaId == dto.FerramentaId);
+
+            if (ferramenta == null)
+                return NotFound("Ferramenta não encontrada");
+
+            var urlImagem = await SalvarArquivo(dto.Foto);
+
+            var imagem = new FerramentaImagem
+            {
+                FerramentaId = dto.FerramentaId,
+                UrlImagem = urlImagem
+            };
+
+            _context.FerramentaImagens.Add(imagem);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                mensagem = "Imagem adicionada com sucesso",
+                urlImagem
+            });
+        }
+
+        // =====================================================
+        // LISTAR FOTOS DA FERRAMENTA
+        // =====================================================
+        [HttpGet("ferramenta/{ferramentaId}/fotos")]
+        public async Task<IActionResult> ListarFotos(int ferramentaId)
+        {
+            var existe = await _context.Ferramenta
+                .AnyAsync(f => f.FerramentaId == ferramentaId);
+
+            if (!existe)
+                return NotFound("Ferramenta não encontrada");
+
+            var fotos = await _context.FerramentaImagens
+                .Where(i => i.FerramentaId == ferramentaId)
+                .Select(i => new
+                {
+                    i.Id,
+                    i.UrlImagem
+                })
+                .ToListAsync();
+
+            return Ok(fotos);
+        }
+
+        // =====================================================
+        // DELETAR FOTO
+        // =====================================================
+        [HttpDelete("foto/{id}")]
+        public async Task<IActionResult> DeletarFoto(int id)
+        {
+            var imagem = await _context.FerramentaImagens.FindAsync(id);
+
+            if (imagem == null)
+                return NotFound("Imagem não encontrada");
+
+            var caminhoFisico = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                imagem.UrlImagem.Replace("/", "\\")
+                    .Replace($"{Request.Scheme}://{Request.Host}\\", "")
+            );
+
+            if (System.IO.File.Exists(caminhoFisico))
+                System.IO.File.Delete(caminhoFisico);
+
+            _context.FerramentaImagens.Remove(imagem);
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Imagem deletada com sucesso");
+        }
+
+        // =====================================================
+        // MÉTODO PRIVADO (REUTILIZÁVEL)
+        // =====================================================
+        private async Task<string> SalvarArquivo(IFormFile arquivo)
+        {
+            var nomeArquivo = Guid.NewGuid() +
+                Path.GetExtension(arquivo.FileName);
 
             var pastaUploads = Path.Combine(
                 Directory.GetCurrentDirectory(),
@@ -44,40 +170,11 @@ namespace uc10_Locatem.Controllers
 
             var caminhoCompleto = Path.Combine(pastaUploads, nomeArquivo);
 
-            using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
-            {
-                await dto.Foto.CopyToAsync(stream);
-            }
-
-            var pathBanco = $"Uploads/{nomeArquivo}";
+            using var stream = new FileStream(caminhoCompleto, FileMode.Create);
+            await arquivo.CopyToAsync(stream);
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var urlCompleta = $"{baseUrl}/{pathBanco}";
-
-            var perfil = _context.UsuarioPerfis
-                .FirstOrDefault(p => p.UsuarioId == dto.UsuarioId);
-
-            if (perfil == null)
-            {
-                perfil = new UsuarioPerfil
-                {
-                    UsuarioId = dto.UsuarioId,
-                    UrlFoto = urlCompleta
-                    // UrlFoto = pathBanco
-                };
-
-                _context.UsuarioPerfis.Add(perfil);
-            }
-            else
-            {
-                perfil.UrlFoto = urlCompleta;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                arquivo = nomeArquivo,
-                urlFoto = urlCompleta
-            });
-}   }   }
+            return $"{baseUrl}/Uploads/{nomeArquivo}";
+        }
+    }
+}
