@@ -2,6 +2,8 @@
 using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace uc10_Locatem.Services
 {
@@ -86,6 +88,7 @@ namespace uc10_Locatem.Services
             // Carregar a reserva junto com o produto relacionado para verificar o dono da ferramenta
             var reserva = await _context.Reserva.Include(r => r.Ferramenta).FirstOrDefaultAsync(r => r.Id == reservaId);
 
+            
             // Verificar se a reserva existe
             if (reserva == null)
             {

@@ -26,7 +26,7 @@ namespace uc10_Locatem.Controllers
 
 
 
-        
+        [Authorize]
         [HttpPost("criarReserva")]
         public async Task<IActionResult> CriarReserva([FromBody] CriarReservaDTO dadosReserva)
         {
@@ -45,7 +45,7 @@ namespace uc10_Locatem.Controllers
 
             // Impede a pessoa de reservar sua própria ferramenta
 
-            if (ferramenta.UsuarioId == dadosReserva.UsuarioId)
+            if (ferramenta.UsuarioId == usuarioId)
             {
                 return BadRequest("Não é possível reservar sua própria ferramenta.");
 
@@ -55,6 +55,13 @@ namespace uc10_Locatem.Controllers
             if (dadosReserva.DataInicio >= dadosReserva.DataFim)
             {
                 return BadRequest("A data de início deve ser anterior à data de fim.");
+            }
+
+            // Verificar se a data de início não esta no passado
+
+            if (dadosReserva.DataInicio < DateTime.UtcNow)
+            {
+                return BadRequest("A data de início não pode ser no passado.");
             }
 
             // Verificar se há conflito de reservas para a mesma ferramenta no período solicitado
@@ -74,7 +81,6 @@ namespace uc10_Locatem.Controllers
             var reserva = new Reserva
             {
                 FerramentaId = dadosReserva.FerramentaId,
-                UsuarioId = dadosReserva.UsuarioId,
                 DataInicio = dadosReserva.DataInicio,
                 DataFim = dadosReserva.DataFim,
                 Status = StatusReserva.Pendente,
