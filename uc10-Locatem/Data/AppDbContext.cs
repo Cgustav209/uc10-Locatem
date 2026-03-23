@@ -46,5 +46,6 @@ namespace uc10_Locatem.Data
 
         public DbSet<Categorias> Categorias { get; set; }
 
+        public DbSet<Reserva> Reserva { get; set; }
     }
 }

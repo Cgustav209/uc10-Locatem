@@ -25,6 +25,8 @@ namespace uc10_Locatem
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            // Registrar o serviço de reserva para injeção de dependência
+            builder.Services.AddScoped<ReservaService>();
 
             //builder.Services.AddAuthorization(options =>
             //{
