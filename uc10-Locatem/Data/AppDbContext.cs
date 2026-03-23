@@ -30,6 +30,9 @@ namespace uc10_Locatem.Data
             modelBuilder.Entity<Usuario>()
                 .HasIndex(u => u.Documento)
                 .IsUnique();
+
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Aluguel>()
                 .Property(a => a.ValorTotal)
                 .HasPrecision(10, 2);
@@ -44,8 +47,21 @@ namespace uc10_Locatem.Data
         
         public DbSet<Ferramenta> Ferramenta { get; set; }
 
+        // O método "OnModelCreating" é usado para configurar o modelo de dados. Ele é chamado quando o modelo é criado e pode ser usado para definir regras, restrições e outras configurações para as entidades.
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+
+        //    modelBuilder.Entity<Aluguel>()
+        //        .Property(a => a.ValorTotal)
+        //        .HasPrecision(10, 2);
+        //}
+
+       // public DbSet<Ferramenta> Ferramenta { get; set; }
+
         public DbSet<Categorias> Categorias { get; set; }
 
-        public DbSet<Reserva> Reserva { get; set; }
+        public DbSet<FerramentaImagem> FerramentaImagens { get; set; }
+
     }
 }
