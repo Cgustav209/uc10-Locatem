@@ -30,7 +30,7 @@ namespace uc10_Locatem.Controllers
         [HttpPost("criarReserva")]
         public async Task<IActionResult> CriarReserva([FromBody] CriarReservaDTO dadosReserva)
         {
-            var usuarioId = int.Parse(User.FindFirst("id").Value);
+           var usuarioId = int.Parse(User.FindFirst("id").Value);
 
             // Verificar se a ferramenta existe
 
