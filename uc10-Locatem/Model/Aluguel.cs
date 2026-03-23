@@ -22,8 +22,14 @@ namespace uc10_Locatem.Model
         public StatusAluguel Status { get; set; } = StatusAluguel.AguardandoPagamento; // define o estado do aluguel (puxa do enum "StatusAluguel.cs")
 
         public decimal ValorTotal { get; set; } // valor do aluguel da ferramenta
+        public decimal ValorDevolvido { get; set; }
 
         //para o perfil
-        public int UsuarioId { get; set;} 
+        public int UsuarioId { get; set;}
+
+        public int ReservaId { get; set; }
+
+        public decimal ValorCaucao { get; set; }
+        public bool CaucaoRetida { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260312191016_updateEnderecoEnum")]
-    partial class updateEnderecoEnum
+    [Migration("20260318195616_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,7 @@ namespace uc10_Locatem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Complemente")
+                    b.Property<string>("Complemento")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
@@ -80,6 +80,34 @@ namespace uc10_Locatem.Migrations
                     b.ToTable("Endereco");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.Aluguel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataFim")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FerramentaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Alugueis");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -101,6 +129,9 @@ namespace uc10_Locatem.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FotoPerfilUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Hash")
@@ -123,7 +154,16 @@ namespace uc10_Locatem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TipoUsuario")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Documento")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Usuario");
                 });

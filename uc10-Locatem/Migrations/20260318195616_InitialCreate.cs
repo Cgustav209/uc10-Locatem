@@ -6,23 +6,42 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace uc10_Locatem.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Alugueis",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FerramentaId = table.Column<int>(type: "int", nullable: false),
+                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alugueis", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Usuario",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Senha = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Hash = table.Column<int>(type: "int", nullable: false),
                     Telefone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Tipo = table.Column<bool>(type: "bit", nullable: false),
+                    Tipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
+                    FotoPerfilUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Documento = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false)
@@ -38,9 +57,10 @@ namespace uc10_Locatem.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    TipoEndereco = table.Column<int>(type: "int", nullable: false),
                     Logradouro = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Numero = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Complemente = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Complemento = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Bairro = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Cidade = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Estado = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -62,11 +82,26 @@ namespace uc10_Locatem.Migrations
                 name: "IX_Endereco_UsuarioId",
                 table: "Endereco",
                 column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuario_Documento",
+                table: "Usuario",
+                column: "Documento",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuario_Email",
+                table: "Usuario",
+                column: "Email",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Alugueis");
+
             migrationBuilder.DropTable(
                 name: "Endereco");
 
