@@ -23,7 +23,7 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public string Descricao { get; set; } = string.Empty;
 
-        public List<string>? Acessorios { get; set; } = new();
+        public string? Acessorios { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
         [Range(1, int.MaxValue, ErrorMessage = "A diária não pode ser abaixo de zero.")]
@@ -51,6 +51,12 @@ namespace uc10_Locatem.Model
         [ForeignKey(nameof(CategoriaId))]
         [JsonIgnore]
         public Categorias categoria { get; set; } = null!;
+
+        public Ferramenta() {
+
+            DataCadastro = DateTime.UtcNow;
+        
+        }
 
 
 

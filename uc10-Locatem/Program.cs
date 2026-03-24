@@ -1,7 +1,10 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using System.Text;
 using uc10_Locatem.Data;
 using uc10_Locatem.Services;
 
@@ -12,6 +15,10 @@ namespace uc10_Locatem
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            var chaveSecreta = builder.Configuration["Jwt:Key"];
+            var issuer = builder.Configuration["Jwt:Issuer"];
+            var audience = builder.Configuration["Jwt:Audience"];
 
             builder.Services.AddScoped<UsuarioService>();
             builder.Services.AddScoped<AuthService>();
@@ -27,6 +34,27 @@ namespace uc10_Locatem
             builder.Services.AddOpenApi();
             // Registrar o serviço de reserva para injeção de dependência
             builder.Services.AddScoped<ReservaService>();
+
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(chaveSecreta!)
+            )
+            };
+        });
+
+            builder.Services.AddAuthorization();
 
             //builder.Services.AddAuthorization(options =>
             //{
@@ -52,9 +80,9 @@ namespace uc10_Locatem
                 RequestPath = "/Uploads"
             });
 
-            app.UseAuthorization();                            
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-      
 
             app.MapControllers();
 

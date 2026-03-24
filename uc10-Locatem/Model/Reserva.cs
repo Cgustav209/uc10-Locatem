@@ -26,5 +26,10 @@ namespace uc10_Locatem.Model
         [ForeignKey(nameof(FerramentaId))]
         public Ferramenta Ferramenta { get; set; } = null!;
 
+        public Reserva()
+        {
+            DataCriacao = DateTime.UtcNow;
+
+        }
     }
 }

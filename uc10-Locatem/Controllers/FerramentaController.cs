@@ -69,7 +69,7 @@ namespace uc10_Locatem.Controllers
                 return Unauthorized("Usuário não autenticado");
             }
 
-            if (UsuarioTipo == "Locador")
+            if (UsuarioTipo != TipoUsuario.Locador.ToString())
             {
                 return Unauthorized("Somente locadores podem registrar ferramenta");
             }
@@ -77,13 +77,15 @@ namespace uc10_Locatem.Controllers
             
             int id = int.Parse(locadorId);
 
+            string resultado = string.Join(", ", dadosFerramenta.Acessorios);
+
             Ferramenta novaFerramenta = new Ferramenta
             {
                 Nome = dadosFerramenta.Nome,
                 Marca = dadosFerramenta.Marca,
                 Modelo = dadosFerramenta.Modelo,
                 Descricao = dadosFerramenta.Descricao,
-                Acessorios = dadosFerramenta.Acessorios,
+                Acessorios = resultado,
                 Diaria = dadosFerramenta.Diaria,
 
                 CategoriaId = dadosFerramenta.CategoriaId,
@@ -120,7 +122,7 @@ namespace uc10_Locatem.Controllers
             }
 
             // checa se é do tipo desejado
-            if (UsuarioTipo != "Locador")
+            if (UsuarioTipo != "LOCADOR")
             {
                 return Unauthorized("Somente locadores podem registrar ferramenta");
             }
@@ -146,20 +148,21 @@ namespace uc10_Locatem.Controllers
             }
 
 
+            string resultado = string.Join(", ", dadosFerramenta.Acessorios);
 
             ferramenta.Nome = dadosFerramenta.Nome;
             ferramenta.Marca = dadosFerramenta.Marca;
             ferramenta.Modelo = dadosFerramenta.Modelo;
             ferramenta.Descricao = dadosFerramenta.Descricao;
-            ferramenta.Acessorios = dadosFerramenta.Acessorios;
+            ferramenta.Acessorios = resultado;
             ferramenta.Diaria = dadosFerramenta.Diaria;
           
           
            
 
-            int resultado = await _ferramentaDbContext.SaveChangesAsync();
+            int conclusao = await _ferramentaDbContext.SaveChangesAsync();
 
-            if (resultado > 0)
+            if (conclusao > 0)
                 return Ok("Ferramenta atualizada com sucesso!");
 
             return BadRequest("Erro ao atualizar ferramenta!");

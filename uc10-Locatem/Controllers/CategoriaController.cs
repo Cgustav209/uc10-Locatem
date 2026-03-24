@@ -26,7 +26,7 @@ namespace uc10_Locatem.Controller
 
             return Ok(listaCategoria);
         }
-        [HttpPost("Criar Categoria")]
+        [HttpPost("CriarCategoria")]
 
         public async Task<IActionResult> CriarCategoria([FromBody] CriarCategoriaDTO dadosCategoria)
         {
