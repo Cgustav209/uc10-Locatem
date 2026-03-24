@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uc10_Locatem.Data;
 
@@ -11,9 +12,11 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323042713_AddFerramentaImagens")]
+    partial class AddFerramentaImagens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace uc10_Locatem.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AcessorioFerramenta", b =>
-                {
-                    b.Property<int>("AcessoriosId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FerramentasFerramentaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AcessoriosId", "FerramentasFerramentaId");
-
-                    b.HasIndex("FerramentasFerramentaId");
-
-                    b.ToTable("AcessorioFerramenta");
-                });
 
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
                 {
@@ -151,6 +139,10 @@ namespace uc10_Locatem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FerramentaId"));
+
+                    b.Property<string>("Acessorios")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
