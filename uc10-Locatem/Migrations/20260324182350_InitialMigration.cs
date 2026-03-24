@@ -6,43 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace uc10_Locatem.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Acessorio",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Acessorio", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Alugueis",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FerramentaId = table.Column<int>(type: "int", nullable: false),
-                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
-                    LocadorId = table.Column<int>(type: "int", nullable: false),
-                    LocatarioId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Alugueis", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Categorias",
                 columns: table => new
@@ -70,7 +38,8 @@ namespace uc10_Locatem.Migrations
                     TipoUsuario = table.Column<int>(type: "int", nullable: false),
                     Documento = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false)
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    Bloqueado = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,8 +83,9 @@ namespace uc10_Locatem.Migrations
                     Marca = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Modelo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Diaria = table.Column<int>(type: "int", nullable: false),
-                    Caucao = table.Column<int>(type: "int", nullable: false),
+                    Acessorios = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Diaria = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    Caucao = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CategoriaId = table.Column<int>(type: "int", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false)
@@ -160,33 +130,109 @@ namespace uc10_Locatem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AcessorioFerramenta",
+                name: "FerramentaImagens",
                 columns: table => new
                 {
-                    AcessoriosId = table.Column<int>(type: "int", nullable: false),
-                    FerramentasFerramentaId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FerramentaId = table.Column<int>(type: "int", nullable: false),
+                    UrlImagem = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AcessorioFerramenta", x => new { x.AcessoriosId, x.FerramentasFerramentaId });
+                    table.PrimaryKey("PK_FerramentaImagens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AcessorioFerramenta_Acessorio_AcessoriosId",
-                        column: x => x.AcessoriosId,
-                        principalTable: "Acessorio",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AcessorioFerramenta_Ferramenta_FerramentasFerramentaId",
-                        column: x => x.FerramentasFerramentaId,
+                        name: "FK_FerramentaImagens_Ferramenta_FerramentaId",
+                        column: x => x.FerramentaId,
                         principalTable: "Ferramenta",
                         principalColumn: "FerramentaId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Reserva",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FerramentaId = table.Column<int>(type: "int", nullable: false),
+                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reserva", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reserva_Ferramenta_FerramentaId",
+                        column: x => x.FerramentaId,
+                        principalTable: "Ferramenta",
+                        principalColumn: "FerramentaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reserva_Usuario_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Alugueis",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FerramentaId = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    ReservaId = table.Column<int>(type: "int", nullable: false),
+                    DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    ValorDevolvido = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    ValorCaucao = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    CaucaoRetida = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alugueis", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Alugueis_Ferramenta_FerramentaId",
+                        column: x => x.FerramentaId,
+                        principalTable: "Ferramenta",
+                        principalColumn: "FerramentaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Alugueis_Reserva_ReservaId",
+                        column: x => x.ReservaId,
+                        principalTable: "Reserva",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Alugueis_Usuario_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_AcessorioFerramenta_FerramentasFerramentaId",
-                table: "AcessorioFerramenta",
-                column: "FerramentasFerramentaId");
+                name: "IX_Alugueis_FerramentaId",
+                table: "Alugueis",
+                column: "FerramentaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alugueis_ReservaId",
+                table: "Alugueis",
+                column: "ReservaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alugueis_UsuarioId",
+                table: "Alugueis",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Endereco_UsuarioId",
@@ -201,6 +247,21 @@ namespace uc10_Locatem.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Ferramenta_UsuarioId",
                 table: "Ferramenta",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FerramentaImagens_FerramentaId",
+                table: "FerramentaImagens",
+                column: "FerramentaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reserva_FerramentaId",
+                table: "Reserva",
+                column: "FerramentaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reserva_UsuarioId",
+                table: "Reserva",
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
@@ -225,19 +286,19 @@ namespace uc10_Locatem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AcessorioFerramenta");
-
-            migrationBuilder.DropTable(
                 name: "Alugueis");
 
             migrationBuilder.DropTable(
                 name: "Endereco");
 
             migrationBuilder.DropTable(
+                name: "FerramentaImagens");
+
+            migrationBuilder.DropTable(
                 name: "UsuarioPerfis");
 
             migrationBuilder.DropTable(
-                name: "Acessorio");
+                name: "Reserva");
 
             migrationBuilder.DropTable(
                 name: "Ferramenta");

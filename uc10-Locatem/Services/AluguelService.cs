@@ -178,7 +178,7 @@ namespace uc10_Locatem.Services
                 };
             }
 
-            var reserva = await _context.Reservas
+            var reserva = await _context.Reserva
                 .Include(r => r.Ferramenta)
                 .FirstOrDefaultAsync(r => r.Id == reservaId);
 

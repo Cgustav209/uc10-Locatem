@@ -61,5 +61,11 @@ namespace uc10_Locatem.Model
         public Ferramenta Ferramenta { get; set; } = null!;
         // Objeto completo da ferramenta (permite acessar dados como Diaria, Nome, etc)
         // Ex: aluguel.Ferramenta.Diaria
+
+        [ForeignKey(nameof(UsuarioId))]
+        public Usuario Usuario { get; set; }
+
+        [ForeignKey(nameof(ReservaId))]
+        public Reserva Reserva { get; set; } 
     }
 }
