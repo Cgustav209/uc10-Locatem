@@ -260,9 +260,9 @@ namespace uc10_Locatem.Services
                 DataInicio = reserva.DataInicio,
                 DataFim = reserva.DataFim,
                 Status = StatusAluguel.AguardandoPagamento,
-                ReservaId = reserva.Id,
+                ReservaId = null,
                 ValorCaucao = reserva.Ferramenta.Caucao,
-                CaucaoRetida = false
+                CaucaoRetida = false,
             };
 
             _context.Alugueis.Add(aluguel);

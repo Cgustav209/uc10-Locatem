@@ -30,7 +30,21 @@ namespace uc10_Locatem.Controllers
         [HttpPost("criarReserva")]
         public async Task<IActionResult> CriarReserva([FromBody] CriarReservaDTO dadosReserva)
         {
-           var usuarioId = int.Parse(User.FindFirst("id").Value);
+            var idClaim = User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(idClaim))
+            {
+                return Unauthorized("ID do usuário não encontrado no token.");
+            }
+
+            int usuarioId = int.Parse(idClaim);
+
+            var usuarioExiste = await _ReservaDbContext.Usuario.AnyAsync(u => u.Id == usuarioId);
+
+            if (!usuarioExiste)
+            {
+                return BadRequest("Usuário do token não existe no banco.");
+            }
 
             // Verificar se a ferramenta existe
 
@@ -84,7 +98,8 @@ namespace uc10_Locatem.Controllers
                 DataInicio = dadosReserva.DataInicio,
                 DataFim = dadosReserva.DataFim,
                 Status = StatusReserva.Pendente,
-                DataCriacao = DateTime.UtcNow
+                DataCriacao = DateTime.UtcNow,
+                UsuarioId = usuarioId
             };
 
             _ReservaDbContext.Reserva.Add(reserva);
