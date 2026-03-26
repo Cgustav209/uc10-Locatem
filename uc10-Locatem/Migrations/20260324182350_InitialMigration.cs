@@ -187,7 +187,7 @@ namespace uc10_Locatem.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FerramentaId = table.Column<int>(type: "int", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    ReservaId = table.Column<int>(type: "int", nullable: false),
+                    ReservaId = table.Column<int>(type: "int", nullable: true),
                     DataInicio = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataFim = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
