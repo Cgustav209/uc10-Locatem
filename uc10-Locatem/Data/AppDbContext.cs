@@ -15,20 +15,23 @@ namespace uc10_Locatem.Data
         { 
         }
 
-        public DbSet<Usuario> Usuario { get; set; } // Cria uma tabela chamada Usuario baseada na classe Usuario
-        public DbSet<Endereco> Endereco { get; set; } // Cria uma tabela chamada Endereco baseada na classe Endereco
+        // Cria as tabelas no banco de dados com base em suas respectivas classes
+        public DbSet<Usuario> Usuario { get; set; } 
+        public DbSet<Endereco> Endereco { get; set; } 
 
-        public DbSet<Aluguel> Alugueis { get; set; } // Cria uma tabela chamada Alugueis baseada na classe Aluguel
+        public DbSet<Aluguel> Alugueis { get; set; } 
 
-        public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; } // Cria uma tabela chamada UsuarioPerfis baseada na classe UsuarioPerfil
+        public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; } 
 
-        public DbSet<Ferramenta> Ferramenta { get; set; }
+        public DbSet<Ferramenta> Ferramenta { get; set; } 
 
         public DbSet<Reserva> Reserva { get; set; }
 
         public DbSet<Categorias> Categorias { get; set; }
 
         public DbSet<FerramentaImagem> FerramentaImagens { get; set; }
+
+        public DbSet<BloqueioDisponibilidade> BloqueioDisponibilidade { get; set; }
 
 
         // O método "OnModelCreating" é usado para configurar o modelo de dados. Ele é chamado quando o modelo é criado e pode ser usado para definir regras, restrições e outras configurações para as entidades.
@@ -65,11 +68,6 @@ namespace uc10_Locatem.Data
             modelBuilder.Entity<Ferramenta>()
                 .Property(f => f.Diaria)
                 .HasPrecision(10, 2);
-
         }
-
-
-        
-
     }
 }

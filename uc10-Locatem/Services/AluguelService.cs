@@ -9,21 +9,18 @@ namespace uc10_Locatem.Services
     // aqui vai tudo o que é regra do sistema
     public class AluguelService
     {
-        // ================================
-        // DEPENDÊNCIA DO BANCO
-        // ================================
         private readonly AppDbContext _context;
+        private readonly DisponibilidadeService _disponibilidadeService;
+
+        public AluguelService(AppDbContext context, DisponibilidadeService disponibilidadeService)
+        {
+            _context = context;
+            _disponibilidadeService = disponibilidadeService;
+        }
 
         // Regra de negócio: duração máxima permitida
         private const int duracao_maxima_dias = 30;
 
-        // ================================
-        // CONSTRUTOR
-        // ================================
-        public AluguelService(AppDbContext context)
-        {
-            _context = context;
-        }
 
         // ================================
         // CRIAR ALUGUEL MANUALMENTE

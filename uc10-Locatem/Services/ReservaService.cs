@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
-using Microsoft.AspNetCore.Authorization;
+using uc10_Locatem.Model.DTO;
 
 
 namespace uc10_Locatem.Services
@@ -10,10 +11,12 @@ namespace uc10_Locatem.Services
     public class ReservaService
     {
         private readonly AppDbContext _context;
+        private readonly DisponibilidadeService _disponibilidadeService;
 
-        public ReservaService(AppDbContext context)
+        public ReservaService(AppDbContext context, DisponibilidadeService disponibilidadeService)
         {
             _context = context;
+            _disponibilidadeService = disponibilidadeService;
         }
 
         public async Task<(bool sucesso, string mensagem)> CancelarReserva(int reservaId, int usuarioId)
@@ -75,6 +78,15 @@ namespace uc10_Locatem.Services
             {
                 return (false, "A reserva já foi processada e não pode ser aceita.");
             }
+
+            var disponibilidadeDto = new VerificarDisponibilidadeDTO
+            {
+                FerramentaId = reserva.FerramentaId,
+                DataInicio = reserva.DataInicio,
+                DataFim = reserva.DataFim
+            };
+
+
             reserva.Status = StatusReserva.Aceita;
             await _context.SaveChangesAsync();
             return (true, "Reserva aceita com sucesso.");

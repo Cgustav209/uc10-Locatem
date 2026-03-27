@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -25,6 +24,7 @@ namespace uc10_Locatem
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
             builder.Services.AddScoped<ReservaService>();
+            builder.Services.AddScoped<DisponibilidadeService>();
 
 
             // Add services to the container.
@@ -54,13 +54,6 @@ namespace uc10_Locatem
             });
 
             builder.Services.AddAuthorization();
-
-            //builder.Services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("SomenteLocador", policy => policy.RequireRole("Locador"));
-
-            //    options.AddPolicy("SomenteLocatario", policy => policy.RequireRole("Locatario"));
-            //});
 
             var app = builder.Build();
 

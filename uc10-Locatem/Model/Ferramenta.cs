@@ -40,7 +40,9 @@ namespace uc10_Locatem.Model
 
         public int UsuarioId { get; set; }
 
-        public ICollection<FerramentaImagem> Imagens { get; set; }
+        public ICollection<FerramentaImagem> Imagens { get; set; } = [];
+
+        public bool Ativo { get; internal set; }
 
         // FK do id_locador e id_locatario, ainda n finalizado,
         // puxa id do usuario mas ainda nao por tipo
@@ -51,15 +53,12 @@ namespace uc10_Locatem.Model
         [ForeignKey(nameof(CategoriaId))]
         [JsonIgnore]
         public Categorias categoria { get; set; } = null!;
+        
 
         public Ferramenta() {
 
             DataCadastro = DateTime.UtcNow;
         
         }
-
-
-
     }
 }
-  
