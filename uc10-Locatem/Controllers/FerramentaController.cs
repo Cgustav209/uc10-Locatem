@@ -77,7 +77,7 @@ namespace uc10_Locatem.Controllers
             
             int id = int.Parse(locadorId);
 
-            string resultado = string.Join(", ", dadosFerramenta.Acessorios);
+            string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
 
             Ferramenta novaFerramenta = new Ferramenta
             {
@@ -148,7 +148,7 @@ namespace uc10_Locatem.Controllers
             }
 
 
-            string resultado = string.Join(", ", dadosFerramenta.Acessorios);
+            string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
 
             ferramenta.Nome = dadosFerramenta.Nome;
             ferramenta.Marca = dadosFerramenta.Marca;
