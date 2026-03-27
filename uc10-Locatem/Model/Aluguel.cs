@@ -20,7 +20,7 @@ namespace uc10_Locatem.Model
 
         public int UsuarioId { get; set; } // FK → usuário que fez o aluguel (locatário)
 
-        public int ReservaId { get; set; } // FK → ligação com a reserva que originou esse aluguel
+        public int? ReservaId { get; set; } // FK → ligação com a reserva que originou esse aluguel
 
 
         // ================= PERÍODO DO ALUGUEL =================

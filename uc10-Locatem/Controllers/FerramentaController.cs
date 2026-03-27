@@ -77,7 +77,7 @@ namespace uc10_Locatem.Controllers
             
             int id = int.Parse(locadorId);
 
-            string resultado = string.Join(", ", dadosFerramenta.Acessorios);
+            string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
 
             Ferramenta novaFerramenta = new Ferramenta
             {
@@ -122,7 +122,7 @@ namespace uc10_Locatem.Controllers
             }
 
             // checa se é do tipo desejado
-            if (UsuarioTipo != "LOCADOR")
+            if (UsuarioTipo != TipoUsuario.Locador.ToString())
             {
                 return Unauthorized("Somente locadores podem registrar ferramenta");
             }
@@ -144,11 +144,11 @@ namespace uc10_Locatem.Controllers
             //cheaca se é o mesmo user
             if (idUser != idCreator) 
             {
-                return Unauthorized("Usuário não autenticado");
+                return Unauthorized("Você não tem permissão para editar esta ferramenta.");
             }
 
 
-            string resultado = string.Join(", ", dadosFerramenta.Acessorios);
+            string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
 
             ferramenta.Nome = dadosFerramenta.Nome;
             ferramenta.Marca = dadosFerramenta.Marca;

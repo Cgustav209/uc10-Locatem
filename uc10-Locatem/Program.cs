@@ -24,7 +24,7 @@ namespace uc10_Locatem
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
-            builder.Services.AddScoped<UsuarioService>();
+            builder.Services.AddScoped<ReservaService>();
 
 
             // Add services to the container.
@@ -33,28 +33,25 @@ namespace uc10_Locatem
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            // Registrar o serviço de reserva para injeção de dependência
-            builder.Services.AddScoped<ReservaService>();
-            //para atualizar o perfil do usuario
-            builder.Services.AddScoped<UsuarioService>();
+         
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-            options.TokenValidationParameters = new TokenValidationParameters
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
 
-                ValidIssuer = issuer,
-                ValidAudience = audience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(chaveSecreta!)
-            )
-            };
-        });
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(chaveSecreta!)
+                )
+                };
+            });
 
             builder.Services.AddAuthorization();
 
