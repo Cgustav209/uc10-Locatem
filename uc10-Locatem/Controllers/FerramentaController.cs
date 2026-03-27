@@ -51,7 +51,7 @@ namespace uc10_Locatem.Controllers
         //}
 
         // n sei se ta correto
-       
+
         [HttpPost("CadastrarFerramenta")]
         public async Task<ActionResult> CadastrarFerramenta([FromBody] CadastrarFerramentaDTO dadosFerramenta)
         {
@@ -74,7 +74,7 @@ namespace uc10_Locatem.Controllers
                 return Unauthorized("Somente locadores podem registrar ferramenta");
             }
 
-            
+
             int id = int.Parse(locadorId);
 
             string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
@@ -90,17 +90,19 @@ namespace uc10_Locatem.Controllers
 
                 CategoriaId = dadosFerramenta.CategoriaId,
                 UsuarioId = id,
+                Status = true,
             };
 
             _ferramentaDbContext.Ferramenta.Add(novaFerramenta);
             int resultadoInsercao = await _ferramentaDbContext.SaveChangesAsync();
 
             if (resultadoInsercao > 0)
-                return Created();
+                return Ok("Ferramenta criada com sucesso!"); ;
+                   
             return BadRequest("Ferramenta não foi registrada!");
         }
 
-      
+
         [HttpPut("EditarFerramenta/{id}")]
         public async Task<ActionResult> EditarFerramenta(int id, [FromBody] EditarFerramentaDTO dadosFerramenta)
         {
@@ -110,11 +112,12 @@ namespace uc10_Locatem.Controllers
             }
 
 
+
             // Pega ID do usuário logado (quando tiver JWT)
             var usuarioId = User.FindFirst("id")?.Value;
             // pega o tipo do atual usuario
             var UsuarioTipo = User.FindFirst("TipoUsuario")?.Value;
-           
+
             // checa se existe
             if (usuarioId == null)
             {
@@ -127,22 +130,21 @@ namespace uc10_Locatem.Controllers
                 return Unauthorized("Somente locadores podem registrar ferramenta");
             }
 
-          
+
             int idUser = int.Parse(usuarioId);
 
-          
             // puxa a ferramenta desejada pelo id
-            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);    
-            
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
+
             if (ferramenta == null)
             {
                 return NotFound("Ferramenta não encontrada!");
             }
             // pega o id de quem cadastrou a ferramenta
-            int idCreator = ferramenta.UsuarioId; 
-            
+            int idCreator = ferramenta.UsuarioId;
+
             //cheaca se é o mesmo user
-            if (idUser != idCreator) 
+            if (idUser != idCreator)
             {
                 return Unauthorized("Você não tem permissão para editar esta ferramenta.");
             }
@@ -156,9 +158,10 @@ namespace uc10_Locatem.Controllers
             ferramenta.Descricao = dadosFerramenta.Descricao;
             ferramenta.Acessorios = resultado;
             ferramenta.Diaria = dadosFerramenta.Diaria;
-          
-          
-           
+            ferramenta.Status = dadosFerramenta.Status;
+
+
+
 
             int conclusao = await _ferramentaDbContext.SaveChangesAsync();
 
@@ -168,8 +171,58 @@ namespace uc10_Locatem.Controllers
             return BadRequest("Erro ao atualizar ferramenta!");
         }
 
+        [HttpDelete("DeletarFerramenta/{id}")]
+        public async Task<IActionResult> DeletarFerramenta(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Pega ID do usuário logado (quando tiver JWT)
+            var usuarioId = User.FindFirst("id")?.Value;
+            // pega o tipo do atual usuario
+            var UsuarioTipo = User.FindFirst("TipoUsuario")?.Value;
+
+            // checa se existe
+            if (usuarioId == null)
+            {
+                return Unauthorized("Usuário não autenticado");
+            }
+
+            // checa se é do tipo desejado
+            if (UsuarioTipo != TipoUsuario.Locador.ToString())
+            {
+                return Unauthorized("Somente locadores podem registrar ferramenta");
+            }
 
 
+            int idUser = int.Parse(usuarioId);
 
+            // puxa a ferramenta desejada pelo id
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
+
+            if (ferramenta == null)
+            {
+                return NotFound("Ferramenta não encontrada!");
+            }
+            // pega o id de quem cadastrou a ferramenta
+            int idCreator = ferramenta.UsuarioId;
+
+            //cheaca se é o mesmo user
+            if (idUser != idCreator)
+            {
+                return Unauthorized("Você não tem permissão para editar esta ferramenta.");
+            }
+
+            _ferramentaDbContext.Ferramenta.Remove(ferramenta);
+
+            int conclusao = await _ferramentaDbContext.SaveChangesAsync();
+
+            if (conclusao > 0)
+                return Ok("Ferramenta deletada com sucesso!");
+
+            return BadRequest("Erro ao deleta ferramenta!");
+        }
     }
 }
