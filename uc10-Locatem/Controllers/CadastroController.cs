@@ -52,6 +52,7 @@ namespace uc10_Locatem.Controllers
 
             return CreatedAtAction(nameof(CriarUsuario), new { id = usuario.Id }, new
             {
+                Id = usuario.Id,
                 Mensagem = "Usuário criado com sucesso",
                 Nome = usuario.Nome,
                 TipoUsuario = usuario.TipoUsuario.ToString()

@@ -30,6 +30,7 @@ namespace uc10_Locatem.Model.DTO
         [StringLength(14, MinimumLength = 11, ErrorMessage = "Documento inválido")]
         public required string Documento { get; set; }
 
+        [Required(ErrorMessage = "Tipo de usuário é obrigatório")]
         public TipoUsuario TipoUsuario { get; set; }
 
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using uc10_Locatem.Data;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
+using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
@@ -14,16 +16,19 @@ namespace uc10_Locatem.Controllers
     [Route("api/[controller]")]
     public class UploadController : ControllerBase
     {
+      private readonly UsuarioService _usuarioService;
         private readonly AppDbContext _context;
 
-        public UploadController(AppDbContext context)
+        //para atualizar o perfil do usuario
+        public UploadController(
+        AppDbContext context,
+        UsuarioService usuarioService)
         {
             _context = context;
+            _usuarioService = usuarioService;
         }
 
-        // =====================================================
-        // FOTO PERFIL
-        // =====================================================
+
         [HttpPost("foto-perfil")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadFotoPerfil([FromForm] UploadFotoDTO dto)
@@ -65,9 +70,6 @@ namespace uc10_Locatem.Controllers
             });
         }
 
-        // =====================================================
-        // FOTO FERRAMENTA (MULTIPLAS)
-        // =====================================================
         [HttpPost("foto-ferramenta")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadFotoFerramenta(
@@ -101,9 +103,6 @@ namespace uc10_Locatem.Controllers
             });
         }
 
-        // =====================================================
-        // LISTAR FOTOS DA FERRAMENTA
-        // =====================================================
         [HttpGet("ferramenta/{ferramentaId}/fotos")]
         public async Task<IActionResult> ListarFotos(int ferramentaId)
         {
@@ -125,9 +124,6 @@ namespace uc10_Locatem.Controllers
             return Ok(fotos);
         }
 
-        // =====================================================
-        // DELETAR FOTO
-        // =====================================================
         [HttpDelete("foto/{id}")]
         public async Task<IActionResult> DeletarFoto(int id)
         {
@@ -152,9 +148,7 @@ namespace uc10_Locatem.Controllers
             return Ok("Imagem deletada com sucesso");
         }
 
-        // =====================================================
-        // MÉTODO PRIVADO (REUTILIZÁVEL)
-        // =====================================================
+        // ---------------------------------------
         private async Task<string> SalvarArquivo(IFormFile arquivo)
         {
             var nomeArquivo = Guid.NewGuid() +
@@ -175,6 +169,27 @@ namespace uc10_Locatem.Controllers
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             return $"{baseUrl}/Uploads/{nomeArquivo}";
+        }
+
+        [Authorize]
+        [HttpPut("perfil/{id}")]
+        public async Task<IActionResult> AtualizarPerfil(
+    int id,
+    [FromBody] AtualizarUsuarioDTO dto)
+        {
+            var usuario = await _context.Usuario
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (usuario == null)
+                return NotFound("Usuário não encontrado");
+
+            usuario.Nome = dto.Nome;
+            usuario.Email = dto.Email;
+            usuario.Telefone = dto.Telefone;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Perfil atualizado com sucesso");
         }
     }
 }

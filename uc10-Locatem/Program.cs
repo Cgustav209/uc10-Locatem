@@ -24,6 +24,7 @@ namespace uc10_Locatem
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
+            builder.Services.AddScoped<UsuarioService>();
 
 
             // Add services to the container.
@@ -34,7 +35,8 @@ namespace uc10_Locatem
             builder.Services.AddOpenApi();
             // Registrar o serviço de reserva para injeção de dependência
             builder.Services.AddScoped<ReservaService>();
-
+            //para atualizar o perfil do usuario
+            builder.Services.AddScoped<UsuarioService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
