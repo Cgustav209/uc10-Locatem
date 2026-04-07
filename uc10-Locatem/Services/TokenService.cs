@@ -35,7 +35,7 @@ namespace uc10_Locatem.Services
             string audience = _configuration["Jwt:Audience"]!;
 
             // Tempo de expiração do token (em horas)
-            int expiracaoHoras = int.Parse(_configuration["Jwt:ExpireMinutes"]!);
+            int expiracaoHoras = int.Parse(_configuration["Jwt:ExpireHours"]!);
 
             // Convertemos a chave secreta para bytes, pois o algoritimo de assinatura do token espera uma chave em formato de bytes
             var chaveBytes = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(chaveSecreta));
@@ -49,6 +49,8 @@ namespace uc10_Locatem.Services
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim(ClaimTypes.Name, usuario.Nome),
                 new Claim("id", usuario.Id.ToString()),
+                new Claim("TipoUsuario", usuario.TipoUsuario.ToString()),
+
 
                 // Id único do token
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

@@ -1,31 +1,68 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using uc10_Locatem.Model.DTO;
+
 
 namespace uc10_Locatem.Model
-
-    //desenvolvida para teste 
 {
     public class Ferramenta
     {
 
         [Key]
-        public int Id { get; set; }
-        public string Name { get; set; } = default!;       // ou Nome
-        public string Slug { get; set; } = default!;       // novo
-        public int CategoriaId { get; set; }              // novo
-        public Categoria Categoria { get; set; } = default!; // novo
+        public int FerramentaId { get; set; }
 
-        public string? Brand { get; set; }                 // opcional (Marca)
-        public decimal PricePerDay { get; set; }           // opcional (PrecoDiaria)
-        public decimal? PricePerWeek { get; set; }         // opcional (PrecoSemanal)
-        public int Stock { get; set; }                     // opcional (Estoque)
-        public decimal? RatingAvg { get; set; }            // opcional (NotaMedia)
-        public int RatingCount { get; set; }               // opcional (QtdAvaliacoes)
-        public bool IsActive { get; set; } = true;         // opcional (Ativo)
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // opcional (RegistroCriacao)
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow; // opcional (RegistroAtualizacao)
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        public string Marca { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        public string Modelo { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        public string Descricao { get; set; } = string.Empty;
+
+        public string? Acessorios { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        [Range(1, int.MaxValue, ErrorMessage = "A diária não pode ser abaixo de zero.")]
+        public decimal Diaria { get; set; }
+
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        public decimal Caucao { get; set; }
+
+        public bool Status {  get; set; }
+
+        public DateTime DataCadastro { get; set; }
+
+        [Required(ErrorMessage = "Campo Obrigatorio")]
+        //categorias da entidade categorias
+        public int CategoriaId { get; set; }
+
+        public int UsuarioId { get; set; }
+
+        public ICollection<FerramentaImagem> Imagens { get; set; }
+
+        // FK do id_locador e id_locatario, ainda n finalizado,
+        // puxa id do usuario mas ainda nao por tipo
+        [ForeignKey(nameof(UsuarioId))]
+        [JsonIgnore]
+        public Usuario Usuario { get; set; } = null!;
+
+        [ForeignKey(nameof(CategoriaId))]
+        [JsonIgnore]
+        public Categorias categoria { get; set; } = null!;
+
+        public Ferramenta() {
+
+            DataCadastro = DateTime.UtcNow;
+        
+        }
 
 
 
     }
 }
+  

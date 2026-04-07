@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uc10_Locatem.Data;
 
@@ -11,9 +12,11 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260324182350_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace uc10_Locatem.Migrations
                     b.Property<int>("FerramentaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReservaId")
+                    b.Property<int>("ReservaId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -154,7 +157,7 @@ namespace uc10_Locatem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FerramentaId"));
 
-                    b.Property<string>("Acessorios")
+                    b.PrimitiveCollection<string>("Acessorios")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoriaId")
@@ -186,9 +189,6 @@ namespace uc10_Locatem.Migrations
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
@@ -365,7 +365,9 @@ namespace uc10_Locatem.Migrations
 
                     b.HasOne("uc10_Locatem.Model.Reserva", "Reserva")
                         .WithMany()
-                        .HasForeignKey("ReservaId");
+                        .HasForeignKey("ReservaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
                         .WithMany()

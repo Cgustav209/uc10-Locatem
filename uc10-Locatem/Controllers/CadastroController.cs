@@ -43,14 +43,20 @@ namespace uc10_Locatem.Controllers
                 Nome = dadosUsuario.Nome,
                 Email = dadosUsuario.Email,
                 Senha = senhaHash,
-                TipoUsuario = dadosUsuario.Tipo.ToLower() == "locador"? TipoUsuario.Locador : TipoUsuario.Locatario,
+                TipoUsuario = dadosUsuario.TipoUsuario,
                 Telefone = dadosUsuario.Telefone,
                 Documento = dadosUsuario.Documento,
             };
 
             await _usuarioService.CriarUsuario(usuario);
 
-            return CreatedAtAction(nameof(CriarUsuario), new { id = usuario.Id }, usuario);
+            return CreatedAtAction(nameof(CriarUsuario), new { id = usuario.Id }, new
+            {
+                Mensagem = "Usuário criado com sucesso",
+                Nome = usuario.Nome,
+                TipoUsuario = usuario.TipoUsuario.ToString(),
+                Id = usuario.Id
+            });
 
             //[HttpPost("upload-foto")]
             //public async Task<IActionResult> UploadFoto([FromForm] UsuarioFotoDTO dto)
