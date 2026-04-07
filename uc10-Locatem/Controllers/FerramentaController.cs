@@ -97,8 +97,12 @@ namespace uc10_Locatem.Controllers
             int resultadoInsercao = await _ferramentaDbContext.SaveChangesAsync();
 
             if (resultadoInsercao > 0)
-                return Ok("Ferramenta criada com sucesso!"); ;
-                   
+                return Ok(new
+                {
+                    mensagem = "Ferramenta criada com sucesso!",
+                    id = novaFerramenta.FerramentaId
+                });
+
             return BadRequest("Ferramenta não foi registrada!");
         }
 
