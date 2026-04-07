@@ -8,6 +8,7 @@ namespace uc10_Locatem.Model
 {
     public class Ferramenta
     {
+
         [Key]
         public int FerramentaId { get; set; }
 

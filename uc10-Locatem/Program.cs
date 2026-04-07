@@ -68,15 +68,15 @@ namespace uc10_Locatem
 
             //        policy
 
-            //        //Origem exata que pode fazer requisiÁıes para a API
+            //        //Origem exata que pode fazer requisi√ß√µes para a API
             //        //Vamos inserir o dominio do front-end React.JS
             //        .WithOrigins("https://localhost:7127/")
 
             //        //Permite qualquer metodo http (HTTP, GET, POST, DELETE, PUT, etc)
             //        .WithMethods("GET","POST","PUT","DELETE","OPTIONS")
-            //        // CabeÁalhos que front-end pode incluir nas requisiÁıes para a API
-            //        // Content-type È necess·rio para enviar dados no corpo da requisiÁ„o (ex: JSON)
-            //        // Authorization È necess·rio para enviar o token JWT no cabeÁalho da requisiÁ„o
+            //        // Cabe√ßalhos que front-end pode incluir nas requisi√ß√µes para a API
+            //        // Content-type √© necess√°rio para enviar dados no corpo da requisi√ß√£o (ex: JSON)
+            //        // Authorization √© necess√°rio para enviar o token JWT no cabe√ßalho da requisi√ß√£o
             //        .WithHeaders("Content-type", "Authorization")
             //        ;
 
@@ -86,7 +86,7 @@ namespace uc10_Locatem
 
             //});
 
-            // ConfiguraÁ„o de CORS para permitir requisiÁıes de qualquer origem, mÈtodo e cabeÁalho
+            // Configura√ß√£o de CORS para permitir requisi√ß√µes de qualquer origem, m√©todo e cabe√ßalho
             // IMPORTANTE:  ultiliza apenas em desenvolvimento
             builder.Services.AddCors(options =>
                 {
@@ -94,8 +94,8 @@ namespace uc10_Locatem
                     {
                         policy
                             .AllowAnyOrigin() // Permite qualquer origem 
-                            .AllowAnyMethod() // Permite qualquer mÈtodo HTTP
-                            .AllowAnyHeader(); // Permite qualquer cabeÁalho
+                            .AllowAnyMethod() // Permite qualquer m√©todo HTTP
+                            .AllowAnyHeader(); // Permite qualquer cabe√ßalho
                     });
                 });
 
@@ -113,17 +113,17 @@ namespace uc10_Locatem
             // Junta o caminho da pasta do projeto com a pasta "Uploads"
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
-            // Verifica se a pasta "Uploads" N√O existe
+            // Verifica se a pasta "Uploads" N√ÉO existe
             if (!Directory.Exists(uploadPath))
             {
-                // Se n„o existir, cria a pasta automaticamente
+                // Se n√£o existir, cria a pasta automaticamente
                 Directory.CreateDirectory(uploadPath);
             }
 
             // Configura o servidor para permitir acessar arquivos da pasta "Uploads"
             app.UseStaticFiles(new StaticFileOptions
             {
-                // Define o caminho fÌsico onde os arquivos est„o no computador
+                // Define o caminho f√≠sico onde os arquivos est√£o no computador
                 FileProvider = new PhysicalFileProvider(uploadPath),
 
                 // Define a rota para acessar os arquivos pelo navegador
