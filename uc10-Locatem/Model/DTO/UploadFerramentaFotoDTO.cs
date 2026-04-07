@@ -7,8 +7,11 @@ namespace uc10_Locatem.Model.DTO
     {
         [Required]
         public int FerramentaId { get; set; }
+        //// Enviar múltiplos campos "Fotos" no form-data, por isso todos devem ser escritos como "Fotos" no primeiro campo.
+        public List<IFormFile> Fotos { get; set; } = new();
 
-        [Required]
-        public IFormFile? Foto { get; set; }
+        //public List<IFormFile>? Fotos { get; set; }
+        // [Required]
+        // public IFormFile? Foto { get; set; }
     }
 }
