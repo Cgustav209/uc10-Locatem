@@ -58,41 +58,7 @@ namespace uc10_Locatem.Controllers
                 Id = usuario.Id
             });
 
-            //[HttpPost("upload-foto")]
-            //public async Task<IActionResult> UploadFoto([FromForm] UsuarioFotoDTO dto)
-            //{
-            //    var usuario = await _usuarioDbContext.Usuario.FindAsync(dto.UsuarioId);
-
-            //    if (usuario == null)
-            //        return NotFound("Usuário não encontrado");
-
-            //    if (dto.Foto == null || dto.Foto.Length == 0)
-            //        return BadRequest("Arquivo inválido");
-
-            //    var nomeArquivo = Guid.NewGuid().ToString()
-            //        + Path.GetExtension(dto.Foto.FileName);
-
-            //    var pasta = Path.Combine(
-            //        Directory.GetCurrentDirectory(),
-            //        "wwwroot/uploads/usuarios"
-            //    );
-
-            //    if (!Directory.Exists(pasta))
-            //        Directory.CreateDirectory(pasta);
-
-            //    var caminho = Path.Combine(pasta, nomeArquivo);
-
-            //    using (var stream = new FileStream(caminho, FileMode.Create))
-            //    {
-            //        await dto.Foto.CopyToAsync(stream);
-            //    }
-
-            //    usuario.FotoPerfilUrl = $"/uploads/usuarios/{nomeArquivo}";
-
-            //    await _usuarioDbContext.SaveChangesAsync();
-
-            //    return Ok(new { usuario.FotoPerfilUrl });
-            //}
+            
         }
     }
 }

@@ -25,6 +25,7 @@ namespace uc10_Locatem
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
             builder.Services.AddScoped<ReservaService>();
+            
 
 
             // Add services to the container.
