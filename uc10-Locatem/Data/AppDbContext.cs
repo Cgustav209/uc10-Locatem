@@ -28,7 +28,7 @@ namespace uc10_Locatem.Data
 
         public DbSet<Reserva> Reserva { get; set; }
 
-        public DbSet<Categorias> Categorias { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
 
         public DbSet<FerramentaImagem> FerramentaImagens { get; set; }
 

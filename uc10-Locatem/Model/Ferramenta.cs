@@ -41,6 +41,8 @@ namespace uc10_Locatem.Model
         //categorias da entidade categorias
         public int CategoriaId { get; set; }
 
+        public Categoria Categoria { get; set; } = null!;
+
         public int UsuarioId { get; set; }
 
         public ICollection<FerramentaImagem> Imagens { get; set; }
@@ -51,9 +53,7 @@ namespace uc10_Locatem.Model
         [JsonIgnore]
         public Usuario Usuario { get; set; } = null!;
 
-        [ForeignKey(nameof(CategoriaId))]
-        [JsonIgnore]
-        public Categorias categoria { get; set; } = null!;
+        
 
         public Ferramenta() {
 

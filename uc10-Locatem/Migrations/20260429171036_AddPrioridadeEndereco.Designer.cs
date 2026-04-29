@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uc10_Locatem.Data;
 
@@ -11,9 +12,11 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260429171036_AddPrioridadeEndereco")]
+    partial class AddPrioridadeEndereco
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,7 +135,7 @@ namespace uc10_Locatem.Migrations
                     b.ToTable("Alugueis");
                 });
 
-            modelBuilder.Entity("uc10_Locatem.Model.Categoria", b =>
+            modelBuilder.Entity("uc10_Locatem.Model.Categorias", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,19 +143,11 @@ namespace uc10_Locatem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoriaPaiId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("EhPadrao")
-                        .HasColumnType("bit");
-
                     b.Property<string>("nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoriaPaiId");
 
                     b.ToTable("Categorias");
                 });
@@ -391,19 +386,10 @@ namespace uc10_Locatem.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("uc10_Locatem.Model.Categoria", b =>
-                {
-                    b.HasOne("uc10_Locatem.Model.Categoria", "CategoriaPai")
-                        .WithMany("Subcategorias")
-                        .HasForeignKey("CategoriaPaiId");
-
-                    b.Navigation("CategoriaPai");
-                });
-
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>
                 {
-                    b.HasOne("uc10_Locatem.Model.Categoria", "Categoria")
-                        .WithMany("Ferramentas")
+                    b.HasOne("uc10_Locatem.Model.Categorias", "categoria")
+                        .WithMany()
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -414,9 +400,9 @@ namespace uc10_Locatem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Categoria");
-
                     b.Navigation("Usuario");
+
+                    b.Navigation("categoria");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.FerramentaImagem", b =>
@@ -458,13 +444,6 @@ namespace uc10_Locatem.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("uc10_Locatem.Model.Categoria", b =>
-                {
-                    b.Navigation("Ferramentas");
-
-                    b.Navigation("Subcategorias");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>
