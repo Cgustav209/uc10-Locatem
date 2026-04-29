@@ -13,5 +13,6 @@ namespace uc10_Locatem.API.Model.DTO
         public string CEP {  get; set; } = string.Empty;
         public TipoEndereco TipoEndereco { get; set; }
         public int UsuarioId { get; set; }
+        public bool EhPrioritario { get; internal set; }
     }
 }

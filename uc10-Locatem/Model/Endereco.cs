@@ -40,6 +40,7 @@ namespace uc10_Locatem.API.Model
         [StringLength(9)]
         public string CEP { get; set; } = string.Empty;
 
+        public bool EhPrioritario { get; set; } = false;
 
         public int UsuarioId { get; set; }
 

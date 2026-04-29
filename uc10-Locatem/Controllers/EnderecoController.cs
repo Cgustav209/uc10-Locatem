@@ -11,7 +11,7 @@ namespace uc10_Locatem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔐 protege TODOS os endpoints
+    [Authorize] 
     public class EnderecoController : ControllerBase
     {
         private readonly AppDbContext _enderecoDbContext;
@@ -21,7 +21,7 @@ namespace uc10_Locatem.Controllers
             _enderecoDbContext = context;
         }
 
-        // 🔥 MÉTODO CENTRALIZADO (evita repetição)
+        
         private int? ObterUsuarioId()
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -47,18 +47,37 @@ namespace uc10_Locatem.Controllers
             if (enderecosDto == null || !enderecosDto.Any())
                 return BadRequest("Nenhum endereço informado");
 
-            var enderecos = enderecosDto.Select(dto => new Endereco
+            var enderecos = new List<Endereco>();
+
+            foreach (var dto in enderecosDto)
             {
-                Logradouro = dto.Logradouro,
-                Numero = dto.Numero,
-                Complemento = dto.Complemento,
-                Bairro = dto.Bairro,
-                Cidade = dto.Cidade,
-                Estado = dto.Estado,
-                CEP = dto.CEP,
-                TipoEndereco = dto.TipoEndereco,
-                UsuarioId = usuarioId.Value
-            }).ToList();
+                // Regra de Prioridade: se o novo endereço for marcado como prioritário, desmarca o antigo prioritário
+                if (dto.EhPrioritario)
+                {
+                    var existePrioritario = await _enderecoDbContext.Endereco
+                        .FirstOrDefaultAsync(e => e.UsuarioId == usuarioId && e.EhPrioritario);
+
+                    if (existePrioritario != null)
+                    {
+                        // remove prioridade do antigo
+                        existePrioritario.EhPrioritario = false;
+                    }
+                }
+
+                enderecos.Add(new Endereco
+                {
+                    Logradouro = dto.Logradouro,
+                    Numero = dto.Numero,
+                    Complemento = dto.Complemento,
+                    Bairro = dto.Bairro,
+                    Cidade = dto.Cidade,
+                    Estado = dto.Estado,
+                    CEP = dto.CEP,
+                    TipoEndereco = dto.TipoEndereco,
+                    EhPrioritario = dto.EhPrioritario,
+                    UsuarioId = usuarioId.Value
+                });
+            }
 
             await _enderecoDbContext.Endereco.AddRangeAsync(enderecos);
             await _enderecoDbContext.SaveChangesAsync();
@@ -66,8 +85,7 @@ namespace uc10_Locatem.Controllers
             return Ok(new
             {
                 mensagem = "Endereços cadastrados com sucesso",
-                quantidade = enderecos.Count,
-                ids = enderecos.Select(e => e.Id)
+                quantidade = enderecos.Count
             });
         }
 
@@ -83,6 +101,9 @@ namespace uc10_Locatem.Controllers
 
             if (endereco == null)
                 return NotFound($"Endereço com ID {id} não encontrado para este usuário");
+
+            if (endereco.EhPrioritario)
+                return BadRequest("Endereço prioritário não pode ser excluído.");
 
             _enderecoDbContext.Endereco.Remove(endereco);
             await _enderecoDbContext.SaveChangesAsync();
@@ -106,6 +127,19 @@ namespace uc10_Locatem.Controllers
             if (enderecoExistente == null)
                 return NotFound($"Endereço com ID {id} não encontrado para este usuário");
 
+
+            // Regra de Prioridade: se o novo endereço for marcado como prioritário, desmarca o antigo prioritário
+            if (dadosEndereco.EhPrioritario)
+            {
+                var enderecoAtualPrioritario = await _enderecoDbContext.Endereco
+                    .FirstOrDefaultAsync(e => e.UsuarioId == usuarioId && e.EhPrioritario);
+
+                if (enderecoAtualPrioritario != null && enderecoAtualPrioritario.Id != id)
+                {
+                    enderecoAtualPrioritario.EhPrioritario = false;
+                }
+            }
+
             enderecoExistente.Logradouro = dadosEndereco.Logradouro;
             enderecoExistente.Numero = dadosEndereco.Numero;
             enderecoExistente.Complemento = dadosEndereco.Complemento;
@@ -114,6 +148,7 @@ namespace uc10_Locatem.Controllers
             enderecoExistente.Estado = dadosEndereco.Estado;
             enderecoExistente.CEP = dadosEndereco.CEP;
             enderecoExistente.TipoEndereco = dadosEndereco.TipoEndereco;
+            enderecoExistente.EhPrioritario = dadosEndereco.EhPrioritario;
 
             await _enderecoDbContext.SaveChangesAsync();
 
@@ -122,20 +157,6 @@ namespace uc10_Locatem.Controllers
                 mensagem = $"Endereço com ID {id} atualizado com sucesso",
                 enderecoExistente
             });
-        }
-
-        [HttpGet("MeusEnderecos")]
-        public async Task<IActionResult> MeusEnderecos()
-        {
-            var usuarioId = ObterUsuarioId();
-            if (usuarioId == null)
-                return Unauthorized("Usuário não autenticado");
-
-            var enderecos = await _enderecoDbContext.Endereco
-                .Where(e => e.UsuarioId == usuarioId)
-                .ToListAsync();
-
-            return Ok(enderecos);
         }
     }
 }
