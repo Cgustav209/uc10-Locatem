@@ -32,6 +32,8 @@ namespace uc10_Locatem.Data
 
         public DbSet<FerramentaImagem> FerramentaImagens { get; set; }
 
+        public DbSet<Avaliacao> Avaliacoes { get; set; }
+
 
         // O método "OnModelCreating" é usado para configurar o modelo de dados. Ele é chamado quando o modelo é criado e pode ser usado para definir regras, restrições e outras configurações para as entidades.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
