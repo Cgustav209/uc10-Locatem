@@ -9,6 +9,9 @@
         public List<string>? Acessorios { get; set; } = new();
         public int Diaria { get; set; } 
         //public int UsuarioId { get; set; }
-        public int CategoriaId { get; set; }    
+        public int CategoriaId { get; set; }
+
+        //para a localização
+        public string Endereco { get; set; }
     }
 }
