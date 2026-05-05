@@ -61,11 +61,7 @@ namespace uc10_Locatem.Model
         
         }
 
-        // Localização
-        public double Latitude { get; set; }
 
-        public double Longitude { get; set; }
-        public string Endereco { get; set; }
 
     }
 }

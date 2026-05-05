@@ -30,9 +30,7 @@ namespace uc10_Locatem.Model
 
         public int Hash { get; set; }
 
-        [Required(ErrorMessage = "Telefone é obrigatório")]
-        [RegularExpression(@"^\(\d{2}\)\s?\d{4,5}-\d{4}$",
-        ErrorMessage = "Telefone deve estar no formato (11) 99999-9999")]
+        [Required(ErrorMessage = "Telefone é um campo obrigatorio")]
         public string Telefone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Escolha um Tipo")]
