@@ -25,8 +25,7 @@ namespace uc10_Locatem
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
             builder.Services.AddScoped<ReservaService>();
-            builder.Services.AddScoped<GeolocalizacaoService>();
-            builder.Services.AddHttpClient<EnderecoGeolocalizacaoService>();
+
 
             // Add services to the container.
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
