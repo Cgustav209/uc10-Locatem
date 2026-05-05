@@ -89,6 +89,29 @@ namespace uc10_Locatem.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPut("atualizar")]
+        public async Task<IActionResult> Atualizar([FromBody] UpdateUsuarioDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var usuarioIdToken = User.FindFirst("id")?.Value;
+
+            if (usuarioIdToken == null)
+                return Unauthorized();
+
+            int id = int.Parse(usuarioIdToken);
+
+            if (id != dto.Id)
+                return Forbid("Você só pode editar seus próprios dados");
+
+            var usuario = await _usuarioService.AtualizarUsuario(id, dto);
+
+            return Ok(usuario);
+        }
+
+
         // erro (utilizar o CadastroController.cs)
         //[HttpPost("CriarUsuario")]
         //public async Task<IActionResult> CriarUsuario([FromBody] CriarUsuarioDTO dadosUsuario) 

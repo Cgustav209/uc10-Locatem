@@ -16,8 +16,10 @@ namespace uc10_Locatem.Model
 
         public string? Telefone { get; set; }
 
-        public string? TipoUsuario { get; set; } // Locador / Locatario
+      //ja existe no Usuario.cs --  public string? TipoUsuario { get; set; } // Locador / Locatario
 
         public string? UrlFoto { get; set; }
+
+       
     }
 }
