@@ -6,7 +6,6 @@ using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
-using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
@@ -17,19 +16,11 @@ namespace uc10_Locatem.Controllers
     public class FerramentaController : ControllerBase
     {
         private readonly AppDbContext _ferramentaDbContext;
-        private readonly GeolocalizacaoService _geolocalizacaoService;
-        private readonly EnderecoGeolocalizacaoService _enderecoGeolocalizacaoService;
 
-        public FerramentaController(
-        AppDbContext context,
-        GeolocalizacaoService geolocalizacaoService,
-        EnderecoGeolocalizacaoService enderecoGeolocalizacaoService)
+        public FerramentaController(AppDbContext context)
         {
             _ferramentaDbContext = context;
-            _geolocalizacaoService = geolocalizacaoService;
-            _enderecoGeolocalizacaoService = enderecoGeolocalizacaoService;
         }
-
 
         [HttpGet("GetAllTools")]
         public async Task<IActionResult> GetAllFerrametas()
@@ -88,11 +79,6 @@ namespace uc10_Locatem.Controllers
 
             string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
 
-           // buscar latitude e longitude pelo endereço
-            var coordenadas = await
-            _enderecoGeolocalizacaoService
-            .ObterCoordenadasPorEndereco(dadosFerramenta.Endereco);
-
             Ferramenta novaFerramenta = new Ferramenta
             {
                 Nome = dadosFerramenta.Nome,
@@ -105,12 +91,7 @@ namespace uc10_Locatem.Controllers
                 CategoriaId = dadosFerramenta.CategoriaId,
                 UsuarioId = id,
                 Status = true,
-
-                Endereco = dadosFerramenta.Endereco,
-                Latitude = coordenadas.latitude,
-                Longitude = coordenadas.longitude
             };
-
 
             _ferramentaDbContext.Ferramenta.Add(novaFerramenta);
             int resultadoInsercao = await _ferramentaDbContext.SaveChangesAsync();
@@ -184,6 +165,8 @@ namespace uc10_Locatem.Controllers
             ferramenta.Status = dadosFerramenta.Status;
 
 
+
+
             int conclusao = await _ferramentaDbContext.SaveChangesAsync();
 
             if (conclusao > 0)
@@ -245,87 +228,5 @@ namespace uc10_Locatem.Controllers
 
             return BadRequest("Erro ao deleta ferramenta!");
         }
-
-
-        [HttpPost("BuscarFerramentasProximas")]
-        public async Task<IActionResult> BuscarFerramentasProximas(
-            [FromBody] BuscarFerramentasDTO dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-           
-            double latitude;
-            double longitude;
-
-            if (!string.IsNullOrWhiteSpace(dto.Endereco))
-            {
-                var coordenadas = await _enderecoGeolocalizacaoService
-                    .ObterCoordenadasPorEndereco(dto.Endereco);
-
-                latitude = coordenadas.latitude;
-                longitude = coordenadas.longitude;
-            }
-            else if (
-                dto.LatitudeUsuario.HasValue &&
-                dto.LongitudeUsuario.HasValue &&
-                dto.LatitudeUsuario != 0 &&
-                dto.LongitudeUsuario != 0)
-            {
-                latitude = dto.LatitudeUsuario.Value;
-                longitude = dto.LongitudeUsuario.Value;
-            }
-            else
-            {
-                return BadRequest("Informe um endereço válido ou coordenadas válidas.");
-            }
-
-            var query = _ferramentaDbContext.Ferramenta
-            .Where(f => f.Status == true);
-            
-            if (dto.CategoriaId.HasValue)
-            {
-                query = query.Where(f => f.CategoriaId == dto.CategoriaId.Value);
-            }
-
-            var ferramentas = await query.ToListAsync();
-
-            var resultado = ferramentas
-                .Select(f => new
-                {
-                   // f.FerramentaId,
-                    f.Nome,
-                    f.Marca,
-                    f.Modelo,
-                    f.Descricao,
-                    f.Diaria,
-                    f.CategoriaId,
-
-                    f.Endereco,
-
-                    DistanciaKm = Math.Round(
-                        _geolocalizacaoService.CalcularDistancia(
-                            latitude,
-                            longitude,
-                            f.Latitude,
-                            f.Longitude
-                        ), 2)
-                })
-                .Where(f => f.DistanciaKm <= dto.RaioKm)
-                .OrderBy(f => f.DistanciaKm)
-                .ToList();
-
-            if (!resultado.Any())
-            {
-                return NotFound(new
-                {
-                    mensagem = "Nenhuma ferramenta encontrada dentro do raio informado."
-                });
-            }
-
-            return Ok(resultado);
-        }     
     }
 }
