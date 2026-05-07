@@ -70,10 +70,68 @@ namespace uc10_Locatem.Data
                 .Property(f => f.Diaria)
                 .HasPrecision(10, 2);
 
+            modelBuilder.Entity<Avaliacao>()
+                .HasOne(a => a.Avaliador)
+                .WithMany()
+                .HasForeignKey(a => a.AvaliadorId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+                 modelBuilder.Entity<Avaliacao>()
+                .HasOne(a => a.AvaliadoUsuario)
+                .WithMany()
+                .HasForeignKey(a => a.AvaliadoUsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Reserva>()
+               .HasOne(r => r.Usuario)
+               .WithMany()
+                 .HasForeignKey(r => r.UsuarioId)
+                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Reserva>()
+                .HasOne(r => r.Ferramenta)
+                .WithMany()
+                .HasForeignKey(r => r.FerramentaId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Aluguel>()
+                .HasOne(a => a.Usuario)
+                .WithMany()
+                .HasForeignKey(a => a.UsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Aluguel>()
+                .HasOne(a => a.Ferramenta)
+                .WithMany()
+                .HasForeignKey(a => a.FerramentaId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            
+            modelBuilder.Entity<Endereco>()
+                .HasOne<Usuario>()
+                .WithMany()
+                .HasForeignKey(e => e.UsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+         
+            modelBuilder.Entity<FerramentaImagem>()
+                .HasOne<Ferramenta>()
+                .WithMany()
+                .HasForeignKey(fi => fi.FerramentaId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+ 
+            modelBuilder.Entity<UsuarioPerfil>()
+                .HasOne<Usuario>()
+                .WithMany()
+                .HasForeignKey(up => up.UsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<FerramentaImagem>()
+             .HasOne(fi => fi.Ferramenta)
+              .WithMany(f => f.Imagens)
+            .HasForeignKey(fi => fi.FerramentaId)
+             .OnDelete(DeleteBehavior.Cascade);
         }
-
-
-        
-
     }
 }

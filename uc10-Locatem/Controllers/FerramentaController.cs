@@ -241,7 +241,7 @@ namespace uc10_Locatem.Controllers
 
         [HttpPost("BuscarFerramentasProximas")]
         public async Task<IActionResult> BuscarFerramentasProximas(
-        [FromBody] BuscarFerramentasDTO dto)
+    [FromBody] BuscarFerramentasDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -271,9 +271,10 @@ namespace uc10_Locatem.Controllers
             }
 
             var query = _ferramentaDbContext.Ferramenta
+               .Include(f => f.Usuario)
                 .Where(f => f.Status == true);
 
-            // filtro por categoria (se enviado)
+            // filtro categoria
             if (dto.CategoriaId.HasValue)
             {
                 query = query.Where(f => f.CategoriaId == dto.CategoriaId.Value);
@@ -286,17 +287,16 @@ namespace uc10_Locatem.Controllers
                 {
                     f.FerramentaId,
                     f.Nome,
-                   // f.Endereco,
 
                     DistanciaKm = Math.Round(
                         _geolocalizacaoService.CalcularDistancia(
                             latitude,
                             longitude,
-                            f.Latitude,
-                            f.Longitude
+                            f.Usuario.Latitude,
+                            f.Usuario.Longitude
                         ), 2)
                 })
-                .Where(f => f.DistanciaKm <= dto.RaioKm)
+                            .Where(f => f.DistanciaKm <= dto.RaioKm)
                 .OrderBy(f => f.DistanciaKm)
                 .ToList();
 

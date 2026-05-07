@@ -45,8 +45,7 @@ namespace uc10_Locatem.Model
 
         public int UsuarioId { get; set; }
 
-        public ICollection<FerramentaImagem> Imagens { get; set; }
-
+        public ICollection<FerramentaImagem> Imagens { get; set; } = new List<FerramentaImagem>();
         // FK do id_locador e id_locatario, ainda n finalizado,
         // puxa id do usuario mas ainda nao por tipo
         [ForeignKey(nameof(UsuarioId))]
@@ -61,9 +60,8 @@ namespace uc10_Locatem.Model
         
         }
 
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-
+       
+     
     }
 }
   

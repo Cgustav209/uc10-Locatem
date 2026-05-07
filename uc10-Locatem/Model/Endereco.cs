@@ -44,8 +44,8 @@ namespace uc10_Locatem.API.Model
 
         public int UsuarioId { get; set; }
 
-        [ForeignKey(nameof(UsuarioId))]
         [JsonIgnore]
+        [ForeignKey("UsuarioId")]
         public Usuario Usuario { get; set; } = null!;
 
     }

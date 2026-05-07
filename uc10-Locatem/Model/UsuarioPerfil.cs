@@ -8,15 +8,14 @@ namespace uc10_Locatem.Model
         [Key]
         public int Id { get; set; }
 
-        [Required]
         public int UsuarioId { get; set; }
 
         [ForeignKey("UsuarioId")]
-        public Usuario? Usuario { get; set; }
+        public Usuario Usuario { get; set; } = null!;
 
         public string? Telefone { get; set; }
 
-        public string? TipoUsuario { get; set; } // Locador / Locatario
+        public string? TipoUsuario { get; set; }
 
         public string? UrlFoto { get; set; }
     }

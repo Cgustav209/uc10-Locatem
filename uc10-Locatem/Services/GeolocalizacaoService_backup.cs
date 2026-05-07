@@ -47,8 +47,8 @@ namespace uc10_Locatem.Services
                     CalcularDistancia(
                         latUsuario,
                         lonUsuario,
-                        f.Latitude,
-                        f.Longitude
+                        f.Usuario.Latitude,
+                        f.Usuario.Longitude
                     ) <= raioKm
                 )
                 .ToList();
