@@ -7,6 +7,7 @@ using Scalar.AspNetCore;
 using System.Text;
 using uc10_Locatem.Data;
 using uc10_Locatem.Services;
+using uc10_Locatem.Services.Interfaces;
 
 namespace uc10_Locatem
 {
@@ -25,7 +26,13 @@ namespace uc10_Locatem
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
             builder.Services.AddScoped<ReservaService>();
-            
+            builder.Services.AddScoped<GeolocalizacaoService>();
+            builder.Services.AddHttpClient<EnderecoGeolocalizacaoService>();
+
+            //para os testes unitários
+            builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 
             // Add services to the container.

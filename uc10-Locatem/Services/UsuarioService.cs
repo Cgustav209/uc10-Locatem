@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.Data;
 using uc10_Locatem.Model;
+using uc10_Locatem.Services.Interfaces;
 
 namespace uc10_Locatem.Services
 {
-    public class UsuarioService
+    public class UsuarioService : IUsuarioService
     {
         private readonly AppDbContext _context;
 
