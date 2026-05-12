@@ -3,12 +3,14 @@ using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
+using uc10_Locatem.Services.Interfaces;
 
 namespace uc10_Locatem.Services
 {
-    public class DisponibilidadeService
+    public class DisponibilidadeService : IDisponibilidadeService
     {
         private readonly AppDbContext _context;
+        private const int DURACAO_MAXIMA_DIAS = 30;
 
         public DisponibilidadeService(AppDbContext context)
         {
@@ -50,49 +52,13 @@ namespace uc10_Locatem.Services
             }
 
             // =========================================================
-            // VALIDAÇÃO 3: DATA INÍCIO MENOR QUE DATA FIM
+            // VALIDAÇÃO DE PERÍODO
             // =========================================================
-            if (dto.DataInicio >= dto.DataFim)
+            string? erroPeriodo = ValidarPeriodo(dto.DataInicio, dto.DataFim);
+
+            if (erroPeriodo != null)
             {
-                response.Mensagem = "A data de início deve ser menor que a data de fim.";
-                return response;
-            }
-
-            // =========================================================
-            // VALIDAÇÃO 4: BLOQUEAR DATAS NO PASSADO
-            // =========================================================
-            if (dto.DataInicio.Date < DateTime.UtcNow.Date || dto.DataFim.Date < DateTime.UtcNow.Date)
-            {
-                response.Mensagem = "Não é permitido reservar datas no passado.";
-                return response;
-            }
-
-            // =========================================================
-            // VALIDAÇÃO 5: LIMITAR DURAÇÃO MÁXIMA
-            // =========================================================
-            int duracaoMaximaDias = 30;
-            int quantidadeDias = (dto.DataFim.Date - dto.DataInicio.Date).Days;
-
-            if (quantidadeDias > duracaoMaximaDias)
-            {
-                response.Mensagem = $"A duração máxima permitida é de {duracaoMaximaDias} dias.";
-                return response;
-            }
-
-            // =========================================================
-            // VALIDAÇÃO 5: CONFLITO COM ALUGUÉIS
-            // Considera: Ativo e AguardandoPagamento
-            // =========================================================
-            bool conflitoComAluguel = await _context.Alugueis
-                .AnyAsync(a =>
-                    a.FerramentaId == dto.FerramentaId &&
-                    (a.Status == StatusAluguel.Ativo || a.Status == StatusAluguel.AguardandoPagamento) &&
-                    HaSobreposicao(dto.DataInicio, dto.DataFim, a.DataInicio, a.DataFim)
-                );
-
-            if (conflitoComAluguel)
-            {
-                response.Mensagem = "A ferramenta está indisponível nesse período por conflito com aluguel.";
+                response.Mensagem = erroPeriodo;
                 return response;
             }
 
@@ -103,6 +69,10 @@ namespace uc10_Locatem.Services
                 .AnyAsync(r =>
                     r.FerramentaId == dto.FerramentaId &&
                     r.Status == StatusReserva.Aceita &&
+                    (
+                       !dto.ReservaIgnoradaId.HasValue ||
+                       r.Id != dto.ReservaIgnoradaId.Value
+                    ) &&
                     HaSobreposicao(dto.DataInicio, dto.DataFim, r.DataInicio, r.DataFim)
                 );
 
@@ -210,9 +180,9 @@ namespace uc10_Locatem.Services
         // =========================================================
         // MÉTODO: CRIAR BLOQUEIO MANUAL
         // =========================================================
-        public async Task<BloqueioResponseDTO> CriarBloqueio(BloqueioDisponibilidadeDTO dto, int usuarioId)
+        public async Task<ApiResponseDTO> CriarBloqueio(BloqueioDisponibilidadeDTO dto, int usuarioId)
         {
-            BloqueioResponseDTO response = new BloqueioResponseDTO
+            ApiResponseDTO response = new ApiResponseDTO
             {
                 Sucesso = false,
                 Mensagem = string.Empty
@@ -272,15 +242,11 @@ namespace uc10_Locatem.Services
             // =========================================================
             // VALIDAR PERÍODO
             // =========================================================
-            if (dto.DataInicio >= dto.DataFim)
-            {
-                response.Mensagem = "A data de início deve ser menor que a data de fim.";
-                return response;
-            }
+            string? erroPeriodo = ValidarPeriodo(dto.DataInicio, dto.DataFim);
 
-            if (dto.DataInicio.Date < DateTime.UtcNow.Date || dto.DataFim.Date < DateTime.UtcNow.Date)
+            if (erroPeriodo != null)
             {
-                response.Mensagem = "Não é permitido bloquear datas no passado.";
+                response.Mensagem = erroPeriodo;
                 return response;
             }
 
@@ -328,5 +294,45 @@ namespace uc10_Locatem.Services
         {
             return inicioSolicitado < fimExistente && fimSolicitado > inicioExistente;
         }
+
+        // =========================================================
+        // MÉTODO AUXILIAR: VALIDAR PERÍODO
+        // Retorna:
+        // null -> período válido
+        // string -> mensagem de erro
+        // =========================================================
+        private static string? ValidarPeriodo(DateTime dataInicio, DateTime dataFim)
+        {
+            // =========================================================
+            // DATA INÍCIO MENOR QUE DATA FIM
+            // =========================================================
+            if (dataInicio >= dataFim)
+            {
+                return "A data de início deve ser menor que a data de fim.";
+            }
+
+            // =========================================================
+            // BLOQUEAR DATAS NO PASSADO
+            // =========================================================
+            if (dataInicio.Date < DateTime.UtcNow.Date ||
+                dataFim.Date < DateTime.UtcNow.Date)
+            {
+                return "Não é permitido utilizar datas no passado.";
+            }
+
+            // =========================================================
+            // LIMITAR DURAÇÃO MÁXIMA
+            // =========================================================
+            int quantidadeDias = (dataFim.Date - dataInicio.Date).Days;
+
+            if (quantidadeDias > DURACAO_MAXIMA_DIAS)
+            {
+                return $"A duração máxima permitida é de {DURACAO_MAXIMA_DIAS} dias.";
+            }
+
+            return null;
+        }
+
+
     }
 }

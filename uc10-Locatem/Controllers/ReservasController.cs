@@ -78,17 +78,19 @@ namespace uc10_Locatem.Controllers
                 return BadRequest("A data de início não pode ser no passado.");
             }
 
-            // Verificar se há conflito de reservas para a mesma ferramenta no período solicitado
 
-            var conflito = await _ReservaDbContext.Reserva.AnyAsync(r => r.FerramentaId == dadosReserva.FerramentaId && r.Status == StatusReserva.Aceita && dadosReserva.DataInicio <= r.DataFim && dadosReserva.DataFim >= r.DataInicio
-            );
+            // Esta verificação foi comentada porque agora a verificação de disponibilidade é feita no serviço de disponibilidade, que pode levar em consideração outros fatores além das reservas já aceitas, como por exemplo, reservas pendentes ou regras específicas de disponibilidade para cada ferramenta. Isso torna a lógica mais flexível e centralizada, evitando duplicação de código e garantindo que todas as verificações de disponibilidade sejam consistentes em toda a aplicação.
+            //// Verificar se há conflito de reservas para a mesma ferramenta no período solicitado
 
-            // Se houver conflito, retornar um erro 
+            //var conflito = await _ReservaDbContext.Reserva.AnyAsync(r => r.FerramentaId == dadosReserva.FerramentaId && r.Status == StatusReserva.Aceita && dadosReserva.DataInicio <= r.DataFim && dadosReserva.DataFim >= r.DataInicio
+            //);
 
-            if (conflito)
-            {
-                return BadRequest("A ferramenta já está reservada para o período selecionado.");
-            }
+            //// Se houver conflito, retornar um erro 
+
+            //if (conflito)
+            //{
+            //    return BadRequest("A ferramenta já está reservada para o período selecionado.");
+            //}
 
             var disponibilidadeDto = new VerificarDisponibilidadeDTO
             {

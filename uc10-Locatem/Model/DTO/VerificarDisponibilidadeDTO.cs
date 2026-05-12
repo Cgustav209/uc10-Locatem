@@ -14,5 +14,7 @@ namespace uc10_Locatem.Model.DTO
 
         [Required(ErrorMessage = "A data de fim é obrigatória.")]
         public DateTime DataFim { get; set; }
+
+        public int? ReservaIgnoradaId { get; set; }
     }
 }

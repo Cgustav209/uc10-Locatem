@@ -97,22 +97,12 @@ namespace uc10_Locatem.Services
                 };
             }
 
-            bool conflitoPeriodo = await _context.Alugueis.AnyAsync(a =>
-                a.FerramentaId == dadosAluguel.FerramentaId &&
-                (a.Status == StatusAluguel.Ativo || a.Status == StatusAluguel.AguardandoPagamento) &&
-                dadosAluguel.DataInicio <= a.DataFim &&
-                dadosAluguel.DataFim >= a.DataInicio
-            );
-
-            if (conflitoPeriodo)
+            var disponibilidadeDto = new VerificarDisponibilidadeDTO
             {
-                return new ResultadoServiceAluguelDTO
-                {
-                    Sucesso = false,
-                    StatusCode = 400,
-                    Mensagem = "A ferramenta já está alugada nesse período."
-                };
-            }
+                FerramentaId = dadosAluguel.FerramentaId,
+                DataInicio = dadosAluguel.DataInicio,
+                DataFim = dadosAluguel.DataFim
+            };
 
             Aluguel novoAluguel = new Aluguel
             {
@@ -189,22 +179,26 @@ namespace uc10_Locatem.Services
                 };
             }
 
-            bool conflitoPeriodo = await _context.Alugueis.AnyAsync(a =>
-                a.FerramentaId == reserva.FerramentaId &&
-                (a.Status == StatusAluguel.Ativo || a.Status == StatusAluguel.AguardandoPagamento) &&
-                reserva.DataInicio <= a.DataFim &&
-                reserva.DataFim >= a.DataInicio
-            );
+            var disponibilidadeDto = new VerificarDisponibilidadeDTO
+            {
+                FerramentaId = reserva.FerramentaId,
+                DataInicio = reserva.DataInicio,
+                DataFim = reserva.DataFim,
+                ReservaIgnoradaId = reserva.Id
+            };
 
-            if (conflitoPeriodo)
+            var disponibilidade = await _disponibilidadeService
+                .VerificarDisponibilidade(disponibilidadeDto);
+
+            if (!disponibilidade.Disponivel)
             {
                 return new ResultadoServiceAluguelDTO
                 {
                     Sucesso = false,
                     StatusCode = 400,
-                    Mensagem = "A ferramenta já está alugada nesse período."
+                    Mensagem = disponibilidade.Mensagem
                 };
-            }
+            }           
 
             int duracao = (reserva.DataFim - reserva.DataInicio).Days + 1;
 
@@ -257,11 +251,12 @@ namespace uc10_Locatem.Services
                 DataInicio = reserva.DataInicio,
                 DataFim = reserva.DataFim,
                 Status = StatusAluguel.AguardandoPagamento,
-                ReservaId = null,
+                ReservaId = reserva.Id,
                 ValorCaucao = reserva.Ferramenta.Caucao,
                 CaucaoRetida = false,
             };
 
+            
             _context.Alugueis.Add(aluguel);
             reserva.Status = StatusReserva.ConvertidaEmAluguel;
 

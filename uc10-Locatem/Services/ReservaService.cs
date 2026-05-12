@@ -86,6 +86,14 @@ namespace uc10_Locatem.Services
                 DataFim = reserva.DataFim
             };
 
+            // Verificar a disponibilidade da ferramenta para as datas da reserva
+            var disponibilidade = await _disponibilidadeService.VerificarDisponibilidade(disponibilidadeDto);
+
+            if (!disponibilidade.Disponivel)
+            {
+                return (false, disponibilidade.Mensagem);
+            }
+
 
             reserva.Status = StatusReserva.Aceita;
             await _context.SaveChangesAsync();

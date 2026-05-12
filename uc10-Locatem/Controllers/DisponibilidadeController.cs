@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using uc10_Locatem.Model.DTO;
 using uc10_Locatem.Services;
+using uc10_Locatem.Services.Interfaces;
 
 namespace uc10_Locatem.Controllers
 {
@@ -9,9 +10,9 @@ namespace uc10_Locatem.Controllers
     [ApiController]
     public class DisponibilidadeController : ControllerBase
     {
-        private readonly DisponibilidadeService _disponibilidadeService;
+        private readonly IDisponibilidadeService _disponibilidadeService;
 
-        public DisponibilidadeController(DisponibilidadeService disponibilidadeService)
+        public DisponibilidadeController(IDisponibilidadeService disponibilidadeService)
         {
             _disponibilidadeService = disponibilidadeService;
         }
@@ -31,6 +32,15 @@ namespace uc10_Locatem.Controllers
                 DataInicio = dataInicio,
                 DataFim = dataFim
             };
+
+            if (ferramentaId <= 0)
+            {
+                return BadRequest(new ApiResponseDTO
+                {
+                    Sucesso = false,
+                    Mensagem = "ID da ferramenta inválido."
+                });
+            }
 
             DisponibilidadeResponseDTO response = await _disponibilidadeService.VerificarDisponibilidade(dto);
 
@@ -64,26 +74,36 @@ namespace uc10_Locatem.Controllers
 
             if (string.IsNullOrEmpty(usuarioIdClaim))
             {
-                return Unauthorized(new
+                return Unauthorized(new ApiResponseDTO
                 {
+                    Sucesso = false,
                     Mensagem = "Usuário não autenticado."
                 });
             }
 
-            int usuarioId = int.Parse(usuarioIdClaim);
+            if (!int.TryParse(usuarioIdClaim, out int usuarioId))
+            {
+                return Unauthorized(new ApiResponseDTO
+                {
+                    Sucesso = false,
+                    Mensagem = "ID do usuário inválido."
+                });
+            }
 
-            BloqueioResponseDTO response = await _disponibilidadeService.CriarBloqueio(dto, usuarioId);
+            ApiResponseDTO response = await _disponibilidadeService.CriarBloqueio(dto, usuarioId);
 
             if (!response.Sucesso)
             {
-                return BadRequest(new
+                return BadRequest(new ApiResponseDTO
                 {
+                    Sucesso = false,
                     Mensagem = response.Mensagem
                 });
             }
 
-            return Ok(new
+            return Ok(new ApiResponseDTO
             {
+                Sucesso = true,
                 Mensagem = response.Mensagem
             });
         }

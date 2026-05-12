@@ -6,6 +6,7 @@ using Scalar.AspNetCore;
 using System.Text;
 using uc10_Locatem.Data;
 using uc10_Locatem.Services;
+using uc10_Locatem.Services.Interfaces;
 
 namespace uc10_Locatem
 {
@@ -25,6 +26,7 @@ namespace uc10_Locatem
             builder.Services.AddScoped<AluguelService>();
             builder.Services.AddScoped<ReservaService>();
             builder.Services.AddScoped<DisponibilidadeService>();
+            builder.Services.AddScoped<IDisponibilidadeService, DisponibilidadeService>();
 
 
             // Add services to the container.
