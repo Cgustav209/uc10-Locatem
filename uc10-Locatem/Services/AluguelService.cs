@@ -104,6 +104,18 @@ namespace uc10_Locatem.Services
                 DataFim = dadosAluguel.DataFim
             };
 
+            var disponibilidade = await _disponibilidadeService.VerificarDisponibilidade(disponibilidadeDto);
+
+            if (!disponibilidade.Disponivel)
+            {
+                return new ResultadoServiceAluguelDTO
+                {
+                    Sucesso = false,
+                    StatusCode = 400,
+                    Mensagem = disponibilidade.Mensagem
+                };
+            }
+
             Aluguel novoAluguel = new Aluguel
             {
                 FerramentaId = dadosAluguel.FerramentaId,

@@ -99,6 +99,26 @@ namespace uc10_Locatem.Services
             }
 
             // =========================================================
+            // VALIDAÇÃO 8: CONFLITO COM ALUGUÉIS
+            // =========================================================
+            bool conflitoComAluguel = await _context.Alugueis
+                .AnyAsync(a =>
+                    a.FerramentaId == dto.FerramentaId &&
+                    (
+                        a.Status == StatusAluguel.Ativo ||
+                        a.Status == StatusAluguel.AguardandoPagamento ||
+                        a.Status == StatusAluguel.AguardandoConfirmacao
+                    ) &&
+                    HaSobreposicao(dto.DataInicio, dto.DataFim, a.DataInicio, a.DataFim)
+                );
+
+            if (conflitoComAluguel)
+            {
+                response.Mensagem = "A ferramenta está indisponível nesse período por conflito com aluguel.";
+                return response;
+            }
+
+            // =========================================================
             // SE PASSOU POR TODAS AS VALIDAÇÕES
             // =========================================================
             response.Disponivel = true;
