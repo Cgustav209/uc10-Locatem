@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uc10_Locatem.Data;
@@ -11,165 +10,199 @@ namespace uc10_Locatem.Controllers
 {
     [Authorize]
     [ApiController]
-
     [Route("api/[controller]")]
     public class FerramentaController : ControllerBase
     {
-        private readonly AppDbContext _ferramentaDbContext;
+        private readonly AppDbContext _context;
 
         public FerramentaController(AppDbContext context)
         {
-            _ferramentaDbContext = context;
+            _context = context;
         }
 
-        [HttpGet("GetAllTools")]
-        public async Task<IActionResult> GetAllFerrametas()
+        // =====================================================
+        // LISTAR TODAS AS FERRAMENTAS
+        // =====================================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllFerramentas()
         {
-            List<Ferramenta> listaFerramenta = await _ferramentaDbContext.Ferramenta.ToListAsync();
+            var ferramentas = await _context.Ferramenta
+                .Include(f => f.categoria)
+                .ToListAsync();
 
-            return Ok(listaFerramenta);
+            return Ok(ferramentas);
         }
 
-        //[HttpGet("categoria/{categoriaId}")]
-        //public async Task<IActionResult> GetByCategoria(int categoriaId)
-        //{
-        //    var ferramentas = await _ferramentaDbContext.Ferramenta
-        //        .Include(f => f.categoria)
-        //        .Where(f => f.CategoriaId == categoriaId)
-        //        .ToListAsync();
+        // =====================================================
+        // LISTAR APENAS DISPONÍVEIS
+        // =====================================================
 
-        //    if (!ferramentas.Any())
-        //    {
-        //        return NotFound(new
-        //        {
-        //            Erro = true,
-        //            Mensagem = "Nenhuma ferramenta encontrada para essa categoria"
-        //        });
-        //    }
+        [HttpGet("Disponiveis")]
+        public async Task<IActionResult> GetFerramentasDisponiveis()
+        {
+            var ferramentas = await _context.Ferramenta
+                .Where(f =>
+                    f.Status == StatusCadastro.Ativo &&
+                    f.Disponibilidade == StatusDisponibilidade.Disponivel)
+                .ToListAsync();
 
-        //    return Ok(ferramentas);
-        //}
+            return Ok(ferramentas);
+        }
 
-        // n sei se ta correto
-       
-        [HttpPost("CadastrarFerramenta")]
-        public async Task<ActionResult> CadastrarFerramenta([FromBody] CadastrarFerramentaDTO dadosFerramenta)
+        // =====================================================
+        // CADASTRAR FERRAMENTA
+        // =====================================================
+
+        [HttpPost]
+        public async Task<IActionResult> CadastrarFerramenta(
+            [FromBody] CadastrarFerramentaDTO dto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            // Pega ID do usuário logado (quando tiver JWT)
-            var locadorId = User.FindFirst("id")?.Value;
-            var UsuarioTipo = User.FindFirst("TipoUsuario")?.Value;
+            var usuarioId = User.FindFirst("id")?.Value;
+            var tipoUsuario = User.FindFirst("TipoUsuario")?.Value;
 
-            if (locadorId == null)
-            {
+            if (usuarioId == null)
                 return Unauthorized("Usuário não autenticado");
-            }
 
-            if (UsuarioTipo != TipoUsuario.Locador.ToString())
+            if (tipoUsuario != TipoUsuario.Locador.ToString())
+                return Unauthorized("Somente locadores podem cadastrar ferramentas");
+
+            int id = int.Parse(usuarioId);
+
+            string acessorios = string.Join(", ",
+                dto.Acessorios ?? new List<string>());
+
+            Ferramenta novaFerramenta = new()
             {
-                return Unauthorized("Somente locadores podem registrar ferramenta");
-            }
+                Nome = dto.Nome,
+                Marca = dto.Marca,
+                Modelo = dto.Modelo,
+                Descricao = dto.Descricao,
+                Acessorios = acessorios,
+                Diaria = dto.Diaria,
+                Caucao = dto.Caucao,
 
-            
-            int id = int.Parse(locadorId);
+                // STATUS DO SISTEMA
+                Status = StatusCadastro.Ativo,
 
-            string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
+                // DISPONIBILIDADE PARA LOCAÇÃO
+                Disponibilidade = StatusDisponibilidade.Disponivel,
 
-            Ferramenta novaFerramenta = new Ferramenta
-            {
-                Nome = dadosFerramenta.Nome,
-                Marca = dadosFerramenta.Marca,
-                Modelo = dadosFerramenta.Modelo,
-                Descricao = dadosFerramenta.Descricao,
-                Acessorios = resultado,
-                Diaria = dadosFerramenta.Diaria,
-
-                CategoriaId = dadosFerramenta.CategoriaId,
-                UsuarioId = id,
+                CategoriaId = dto.CategoriaId,
+                UsuarioId = id
             };
 
-            _ferramentaDbContext.Ferramenta.Add(novaFerramenta);
-            int resultadoInsercao = await _ferramentaDbContext.SaveChangesAsync();
+            await _context.Ferramenta.AddAsync(novaFerramenta);
 
-            if (resultadoInsercao > 0)
-                return Created();
-            return BadRequest("Ferramenta não foi registrada!");
+            int resultado = await _context.SaveChangesAsync();
+
+            if (resultado > 0)
+                return CreatedAtAction(
+                    nameof(GetAllFerramentas),
+                    new { id = novaFerramenta.FerramentaId },
+                    novaFerramenta);
+
+            return BadRequest("Erro ao cadastrar ferramenta");
         }
 
-      
-        [HttpPut("EditarFerramenta/{id}")]
-        public async Task<ActionResult> EditarFerramenta(int id, [FromBody] EditarFerramentaDTO dadosFerramenta)
+        // =====================================================
+        // EDITAR FERRAMENTA
+        // =====================================================
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditarFerramenta(
+            int id,
+            [FromBody] EditarFerramentaDTO dto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-
-            // Pega ID do usuário logado (quando tiver JWT)
             var usuarioId = User.FindFirst("id")?.Value;
-            // pega o tipo do atual usuario
-            var UsuarioTipo = User.FindFirst("TipoUsuario")?.Value;
-           
-            // checa se existe
+            var tipoUsuario = User.FindFirst("TipoUsuario")?.Value;
+
             if (usuarioId == null)
-            {
                 return Unauthorized("Usuário não autenticado");
-            }
 
-            // checa se é do tipo desejado
-            if (UsuarioTipo != TipoUsuario.Locador.ToString())
-            {
-                return Unauthorized("Somente locadores podem registrar ferramenta");
-            }
+            if (tipoUsuario != TipoUsuario.Locador.ToString())
+                return Unauthorized("Somente locadores podem editar ferramentas");
 
-          
             int idUser = int.Parse(usuarioId);
 
-          
-            // puxa a ferramenta desejada pelo id
-            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);    
-            
+            var ferramenta = await _context.Ferramenta.FindAsync(id);
+
             if (ferramenta == null)
+                return NotFound("Ferramenta não encontrada");
+
+            // VERIFICA SE É O DONO
+            if (ferramenta.UsuarioId != idUser)
             {
-                return NotFound("Ferramenta não encontrada!");
-            }
-            // pega o id de quem cadastrou a ferramenta
-            int idCreator = ferramenta.UsuarioId; 
-            
-            //cheaca se é o mesmo user
-            if (idUser != idCreator) 
-            {
-                return Unauthorized("Você não tem permissão para editar esta ferramenta.");
+                return Unauthorized(
+                    "Você não tem permissão para editar esta ferramenta");
             }
 
+            string acessorios = string.Join(", ",
+                dto.Acessorios ?? new List<string>());
 
-            string resultado = string.Join(", ", dadosFerramenta.Acessorios ?? new List<string>());
+            ferramenta.Nome = dto.Nome;
+            ferramenta.Marca = dto.Marca;
+            ferramenta.Modelo = dto.Modelo;
+            ferramenta.Descricao = dto.Descricao;
+            ferramenta.Acessorios = acessorios;
+            ferramenta.Diaria = dto.Diaria;
+            ferramenta.Caucao = dto.Caucao;
+            ferramenta.CategoriaId = dto.CategoriaId;
 
-            ferramenta.Nome = dadosFerramenta.Nome;
-            ferramenta.Marca = dadosFerramenta.Marca;
-            ferramenta.Modelo = dadosFerramenta.Modelo;
-            ferramenta.Descricao = dadosFerramenta.Descricao;
-            ferramenta.Acessorios = resultado;
-            ferramenta.Diaria = dadosFerramenta.Diaria;
-          
-          
-           
+            await _context.SaveChangesAsync();
 
-            int conclusao = await _ferramentaDbContext.SaveChangesAsync();
-
-            if (conclusao > 0)
-                return Ok("Ferramenta atualizada com sucesso!");
-
-            return BadRequest("Erro ao atualizar ferramenta!");
+            return Ok("Ferramenta atualizada com sucesso");
         }
 
+        // =====================================================
+        // ALTERAR DISPONIBILIDADE
+        // =====================================================
 
+        [HttpPatch("{id}/Disponibilidade")]
+        public async Task<IActionResult> AlterarDisponibilidade(
+            int id,
+            [FromQuery] StatusDisponibilidade disponibilidade)
+        {
+            var ferramenta = await _context.Ferramenta.FindAsync(id);
 
+            if (ferramenta == null)
+                return NotFound("Ferramenta não encontrada");
 
+            ferramenta.Disponibilidade = disponibilidade;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                mensagem = "Disponibilidade atualizada",
+                ferramentaId = ferramenta.FerramentaId,
+                disponibilidade = ferramenta.Disponibilidade
+            });
+        }
+
+        // =====================================================
+        // DESATIVAR FERRAMENTA
+        // =====================================================
+
+        [HttpPatch("{id}/Desativar")]
+        public async Task<IActionResult> DesativarFerramenta(int id)
+        {
+            var ferramenta = await _context.Ferramenta.FindAsync(id);
+
+            if (ferramenta == null)
+                return NotFound("Ferramenta não encontrada");
+
+            ferramenta.Status = StatusCadastro.Inativo;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Ferramenta desativada com sucesso");
+        }
     }
 }

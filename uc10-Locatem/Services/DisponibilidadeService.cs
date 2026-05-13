@@ -45,7 +45,7 @@ namespace uc10_Locatem.Services
             // =========================================================
             // VALIDAÇÃO 2: FERRAMENTA ESTÁ ATIVA?
             // =========================================================
-            if (!ferramenta.Ativo)
+            if (ferramenta.Disponibilidade == StatusDisponibilidade.Disponivel)
             {
                 response.Mensagem = "A ferramenta está inativa e não pode ser reservada.";
                 return response;
@@ -244,7 +244,7 @@ namespace uc10_Locatem.Services
             // =========================================================
             // VALIDAR SE A FERRAMENTA ESTÁ ATIVA
             // =========================================================
-            if (!ferramenta.Ativo)
+            if (ferramenta.Disponibilidade == StatusDisponibilidade.Disponivel)
             {
                 response.Mensagem = "A ferramenta está inativa e não pode ser bloqueada.";
                 return response;

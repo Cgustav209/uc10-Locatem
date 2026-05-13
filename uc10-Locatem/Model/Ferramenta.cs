@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using uc10_Locatem.Enum;
 using uc10_Locatem.Model.DTO;
 
 
@@ -42,7 +43,9 @@ namespace uc10_Locatem.Model
 
         public ICollection<FerramentaImagem> Imagens { get; set; } = [];
 
-        public bool Ativo { get; internal set; }
+        public StatusCadastro Status { get; set; } = StatusCadastro.Ativo;
+
+        public StatusDisponibilidade Disponibilidade { get; set; } = StatusDisponibilidade.Disponivel;
 
         // FK do id_locador e id_locatario, ainda n finalizado,
         // puxa id do usuario mas ainda nao por tipo
