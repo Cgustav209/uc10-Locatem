@@ -25,6 +25,13 @@ namespace uc10_Locatem
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<AluguelService>();
             builder.Services.AddScoped<ReservaService>();
+            builder.Services.AddScoped<GeolocalizacaoService>();
+            builder.Services.AddHttpClient<EnderecoGeolocalizacaoService>();
+
+            //para os testes unitários
+            builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
             builder.Services.AddScoped<DisponibilidadeService>();
             builder.Services.AddScoped<IDisponibilidadeService, DisponibilidadeService>();
 
@@ -56,6 +63,51 @@ namespace uc10_Locatem
             });
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddAuthorization(options =>
+           {
+                options.AddPolicy("SomenteLocador", policy => policy.RequireRole("Locador"));
+
+                options.AddPolicy("SomenteLocatario", policy => policy.RequireRole("Locatario"));
+            });
+
+            //builder.Services.AddCors(options => {
+
+            //    options.AddPolicy("PermitirFrontEnd", policy => {
+
+            //        policy
+
+            //        //Origem exata que pode fazer requisições para a API
+            //        //Vamos inserir o dominio do front-end React.JS
+            //        .WithOrigins("https://localhost:7127/")
+
+            //        //Permite qualquer metodo http (HTTP, GET, POST, DELETE, PUT, etc)
+            //        .WithMethods("GET","POST","PUT","DELETE","OPTIONS")
+            //        // Cabeçalhos que front-end pode incluir nas requisições para a API
+            //        // Content-type é necessário para enviar dados no corpo da requisição (ex: JSON)
+            //        // Authorization é necessário para enviar o token JWT no cabeçalho da requisição
+            //        .WithHeaders("Content-type", "Authorization")
+            //        ;
+
+
+
+            //    } );
+
+            //});
+
+            // Configuração de CORS para permitir requisições de qualquer origem, método e cabeçalho
+            // IMPORTANTE:  ultiliza apenas em desenvolvimento
+            builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy("PermitirTudo", policy =>
+                    {
+                        policy
+                            .WithOrigins("http://127.0.0.1:5501")
+                            // .AllowAnyOrigin() // Permite qualquer origem 
+                            .AllowAnyMethod() // Permite qualquer método HTTP
+                            .AllowAnyHeader(); // Permite qualquer cabeçalho
+                    });
+                });
 
             var app = builder.Build();
 

@@ -5,6 +5,7 @@ using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
 using uc10_Locatem.Model.DTO;
+using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
@@ -13,11 +14,18 @@ namespace uc10_Locatem.Controllers
     [Route("api/[controller]")]
     public class FerramentaController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _ferramentaDbContext;
+        private readonly GeolocalizacaoService _geolocalizacaoService;
+        private readonly EnderecoGeolocalizacaoService _enderecoGeolocalizacaoService;
 
-        public FerramentaController(AppDbContext context)
+        public FerramentaController(
+            AppDbContext context,
+            GeolocalizacaoService geolocalizacaoService,
+            EnderecoGeolocalizacaoService enderecoGeolocalizacaoService)
         {
-            _context = context;
+            _ferramentaDbContext = context;
+            _geolocalizacaoService = geolocalizacaoService;
+            _enderecoGeolocalizacaoService = enderecoGeolocalizacaoService;
         }
 
         // =====================================================
@@ -85,14 +93,16 @@ namespace uc10_Locatem.Controllers
                 Diaria = dto.Diaria,
                 Caucao = dto.Caucao,
 
-                // STATUS DO SISTEMA
-                Status = StatusCadastro.Ativo,
-
-                // DISPONIBILIDADE PARA LOCAÇÃO
-                Disponibilidade = StatusDisponibilidade.Disponivel,
-
+                //STATUS DO SISTEMA
+                Status= StatusCadastro.Ativo, 
+               //DOSPONIBILIDADE PARA LOCAÇAO
+               Disponibilidade = StatusDisponibilidade.Disponivel,
+               
                 CategoriaId = dto.CategoriaId,
-                UsuarioId = id
+
+               // CategoriaId = dadosFerramenta.CategoriaId,
+                UsuarioId = id,
+                Status = true,
             };
 
             await _context.Ferramenta.AddAsync(novaFerramenta);
@@ -203,6 +213,75 @@ namespace uc10_Locatem.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("Ferramenta desativada com sucesso");
+        }
+
+        [HttpPost("BuscarFerramentasProximas")]
+        public async Task<IActionResult> BuscarFerramentasProximas(
+    [FromBody] BuscarFerramentasDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            double latitude;
+            double longitude;
+
+            // endereço OU coordenadas
+            if (!string.IsNullOrWhiteSpace(dto.Endereco))
+            {
+                var coordenadas = await _enderecoGeolocalizacaoService
+                    .ObterCoordenadasPorEndereco(dto.Endereco);
+
+                latitude = coordenadas.latitude;
+                longitude = coordenadas.longitude;
+            }
+            else if (dto.LatitudeUsuario.HasValue && dto.LongitudeUsuario.HasValue)
+            {
+                latitude = dto.LatitudeUsuario.Value;
+                longitude = dto.LongitudeUsuario.Value;
+            }
+            else
+            {
+                return BadRequest("Informe endereço ou coordenadas.");
+            }
+
+            var query = _ferramentaDbContext.Ferramenta
+               .Include(f => f.Usuario)
+                .Where(f => f.Status == true);
+
+            // filtro categoria
+            if (dto.CategoriaId.HasValue)
+            {
+                query = query.Where(f => f.CategoriaId == dto.CategoriaId.Value);
+            }
+
+            var ferramentas = await query.ToListAsync();
+
+            var resultado = ferramentas
+                .Select(f => new
+                {
+                    f.FerramentaId,
+                    f.Nome,
+
+                    DistanciaKm = Math.Round(
+                        _geolocalizacaoService.CalcularDistancia(
+                            latitude,
+                            longitude,
+                            f.Usuario.Latitude,
+                            f.Usuario.Longitude
+                        ), 2)
+                })
+                            .Where(f => f.DistanciaKm <= dto.RaioKm)
+                .OrderBy(f => f.DistanciaKm)
+                .ToList();
+
+            if (!resultado.Any())
+            {
+                return NotFound("Nenhuma ferramenta encontrada.");
+            }
+
+            return Ok(resultado);
         }
     }
 }
