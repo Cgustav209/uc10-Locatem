@@ -15,16 +15,15 @@ namespace uc10_Locatem.Data
         { 
         }
 
-     
+        // Cria as tabelas no banco de dados com base em suas respectivas classes
+        public DbSet<Usuario> Usuario { get; set; } 
+        public DbSet<Endereco> Endereco { get; set; } 
 
-        public DbSet<Usuario> Usuario { get; set; } // Cria uma tabela chamada Usuario baseada na classe Usuario
-        public DbSet<Endereco> Endereco { get; set; } // Cria uma tabela chamada Endereco baseada na classe Endereco
+        public DbSet<Aluguel> Alugueis { get; set; } 
 
-        public DbSet<Aluguel> Alugueis { get; set; } // Cria uma tabela chamada Alugueis baseada na classe Aluguel
+        public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; } 
 
-        public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; } // Cria uma tabela chamada UsuarioPerfis baseada na classe UsuarioPerfil
-
-        public DbSet<Ferramenta> Ferramenta { get; set; }
+        public DbSet<Ferramenta> Ferramenta { get; set; } 
 
         public DbSet<Reserva> Reserva { get; set; }
 
@@ -32,7 +31,7 @@ namespace uc10_Locatem.Data
 
         public DbSet<FerramentaImagem> FerramentaImagens { get; set; }
 
-        public DbSet<Avaliacao> Avaliacoes { get; set; }
+        public DbSet<BloqueioDisponibilidade> BloqueioDisponibilidade { get; set; }
 
 
         // O método "OnModelCreating" é usado para configurar o modelo de dados. Ele é chamado quando o modelo é criado e pode ser usado para definir regras, restrições e outras configurações para as entidades.
@@ -69,69 +68,6 @@ namespace uc10_Locatem.Data
             modelBuilder.Entity<Ferramenta>()
                 .Property(f => f.Diaria)
                 .HasPrecision(10, 2);
-
-            modelBuilder.Entity<Avaliacao>()
-                .HasOne(a => a.Avaliador)
-                .WithMany()
-                .HasForeignKey(a => a.AvaliadorId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-                 modelBuilder.Entity<Avaliacao>()
-                .HasOne(a => a.AvaliadoUsuario)
-                .WithMany()
-                .HasForeignKey(a => a.AvaliadoUsuarioId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Reserva>()
-               .HasOne(r => r.Usuario)
-               .WithMany()
-                 .HasForeignKey(r => r.UsuarioId)
-                 .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Reserva>()
-                .HasOne(r => r.Ferramenta)
-                .WithMany()
-                .HasForeignKey(r => r.FerramentaId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Aluguel>()
-                .HasOne(a => a.Usuario)
-                .WithMany()
-                .HasForeignKey(a => a.UsuarioId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Aluguel>()
-                .HasOne(a => a.Ferramenta)
-                .WithMany()
-                .HasForeignKey(a => a.FerramentaId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-
-            modelBuilder.Entity<Endereco>()
-            .HasOne(e => e.Usuario)
-            .WithMany()
-            .HasForeignKey(e => e.UsuarioId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-
-            modelBuilder.Entity<FerramentaImagem>()
-                .HasOne<Ferramenta>()
-                .WithMany()
-                .HasForeignKey(fi => fi.FerramentaId)
-                .OnDelete(DeleteBehavior.NoAction);
-
- 
-            modelBuilder.Entity<UsuarioPerfil>()
-                .HasOne<Usuario>()
-                .WithMany()
-                .HasForeignKey(up => up.UsuarioId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<FerramentaImagem>()
-             .HasOne(fi => fi.Ferramenta)
-              .WithMany(f => f.Imagens)
-            .HasForeignKey(fi => fi.FerramentaId)
-             .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

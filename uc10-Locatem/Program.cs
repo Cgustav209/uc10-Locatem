@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -33,6 +32,8 @@ namespace uc10_Locatem
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+            builder.Services.AddScoped<DisponibilidadeService>();
+            builder.Services.AddScoped<IDisponibilidadeService, DisponibilidadeService>();
 
 
             // Add services to the container.

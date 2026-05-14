@@ -9,21 +9,18 @@ namespace uc10_Locatem.Services
     // aqui vai tudo o que é regra do sistema
     public class AluguelService
     {
-        // ================================
-        // DEPENDÊNCIA DO BANCO
-        // ================================
         private readonly AppDbContext _context;
+        private readonly DisponibilidadeService _disponibilidadeService;
+
+        public AluguelService(AppDbContext context, DisponibilidadeService disponibilidadeService)
+        {
+            _context = context;
+            _disponibilidadeService = disponibilidadeService;
+        }
 
         // Regra de negócio: duração máxima permitida
         private const int duracao_maxima_dias = 30;
 
-        // ================================
-        // CONSTRUTOR
-        // ================================
-        public AluguelService(AppDbContext context)
-        {
-            _context = context;
-        }
 
         // ================================
         // CRIAR ALUGUEL MANUALMENTE
@@ -100,20 +97,22 @@ namespace uc10_Locatem.Services
                 };
             }
 
-            bool conflitoPeriodo = await _context.Alugueis.AnyAsync(a =>
-                a.FerramentaId == dadosAluguel.FerramentaId &&
-                (a.Status == StatusAluguel.Ativo || a.Status == StatusAluguel.AguardandoPagamento) &&
-                dadosAluguel.DataInicio <= a.DataFim &&
-                dadosAluguel.DataFim >= a.DataInicio
-            );
+            var disponibilidadeDto = new VerificarDisponibilidadeDTO
+            {
+                FerramentaId = dadosAluguel.FerramentaId,
+                DataInicio = dadosAluguel.DataInicio,
+                DataFim = dadosAluguel.DataFim
+            };
 
-            if (conflitoPeriodo)
+            var disponibilidade = await _disponibilidadeService.VerificarDisponibilidade(disponibilidadeDto);
+
+            if (!disponibilidade.Disponivel)
             {
                 return new ResultadoServiceAluguelDTO
                 {
                     Sucesso = false,
                     StatusCode = 400,
-                    Mensagem = "A ferramenta já está alugada nesse período."
+                    Mensagem = disponibilidade.Mensagem
                 };
             }
 
@@ -192,22 +191,26 @@ namespace uc10_Locatem.Services
                 };
             }
 
-            bool conflitoPeriodo = await _context.Alugueis.AnyAsync(a =>
-                a.FerramentaId == reserva.FerramentaId &&
-                (a.Status == StatusAluguel.Ativo || a.Status == StatusAluguel.AguardandoPagamento) &&
-                reserva.DataInicio <= a.DataFim &&
-                reserva.DataFim >= a.DataInicio
-            );
+            var disponibilidadeDto = new VerificarDisponibilidadeDTO
+            {
+                FerramentaId = reserva.FerramentaId,
+                DataInicio = reserva.DataInicio,
+                DataFim = reserva.DataFim,
+                ReservaIgnoradaId = reserva.Id
+            };
 
-            if (conflitoPeriodo)
+            var disponibilidade = await _disponibilidadeService
+                .VerificarDisponibilidade(disponibilidadeDto);
+
+            if (!disponibilidade.Disponivel)
             {
                 return new ResultadoServiceAluguelDTO
                 {
                     Sucesso = false,
                     StatusCode = 400,
-                    Mensagem = "A ferramenta já está alugada nesse período."
+                    Mensagem = disponibilidade.Mensagem
                 };
-            }
+            }           
 
             int duracao = (reserva.DataFim - reserva.DataInicio).Days + 1;
 
@@ -260,11 +263,12 @@ namespace uc10_Locatem.Services
                 DataInicio = reserva.DataInicio,
                 DataFim = reserva.DataFim,
                 Status = StatusAluguel.AguardandoPagamento,
-                ReservaId = null,
+                ReservaId = reserva.Id,
                 ValorCaucao = reserva.Ferramenta.Caucao,
                 CaucaoRetida = false,
             };
 
+            
             _context.Alugueis.Add(aluguel);
             reserva.Status = StatusReserva.ConvertidaEmAluguel;
 

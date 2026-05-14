@@ -14,16 +14,16 @@ namespace uc10_Locatem.Controllers
     public class ReservasController : ControllerBase
     {
         private readonly AppDbContext _ReservaDbContext;
-
         private readonly ReservaService _reservaService;
+        private readonly DisponibilidadeService _disponibilidadeService;
 
         // Injeção de dependência do ReservaService para usar a lógica de negócios relacionada às reservas
-        public ReservasController(AppDbContext context, ReservaService reservaService)
+        public ReservasController(AppDbContext context, ReservaService reservaService, DisponibilidadeService disponibilidadeService)
         {
             _ReservaDbContext = context;
             _reservaService = reservaService;
+            _disponibilidadeService = disponibilidadeService;
         }
-
 
 
         [Authorize]
@@ -78,18 +78,36 @@ namespace uc10_Locatem.Controllers
                 return BadRequest("A data de início não pode ser no passado.");
             }
 
-            // Verificar se há conflito de reservas para a mesma ferramenta no período solicitado
 
-            var conflito = await _ReservaDbContext.Reserva.AnyAsync(r => r.FerramentaId == dadosReserva.FerramentaId && r.Status == StatusReserva.Aceita && dadosReserva.DataInicio <= r.DataFim && dadosReserva.DataFim >= r.DataInicio
-            );
+            // Esta verificação foi comentada porque agora a verificação de disponibilidade é feita no serviço de disponibilidade, que pode levar em consideração outros fatores além das reservas já aceitas, como por exemplo, reservas pendentes ou regras específicas de disponibilidade para cada ferramenta. Isso torna a lógica mais flexível e centralizada, evitando duplicação de código e garantindo que todas as verificações de disponibilidade sejam consistentes em toda a aplicação.
+            //// Verificar se há conflito de reservas para a mesma ferramenta no período solicitado
 
-            // Se houver conflito, retornar um erro 
+            //var conflito = await _ReservaDbContext.Reserva.AnyAsync(r => r.FerramentaId == dadosReserva.FerramentaId && r.Status == StatusReserva.Aceita && dadosReserva.DataInicio <= r.DataFim && dadosReserva.DataFim >= r.DataInicio
+            //);
 
-            if (conflito)
+            //// Se houver conflito, retornar um erro 
+
+            //if (conflito)
+            //{
+            //    return BadRequest("A ferramenta já está reservada para o período selecionado.");
+            //}
+
+            var disponibilidadeDto = new VerificarDisponibilidadeDTO
             {
-                return BadRequest("A ferramenta já está reservada para o período selecionado.");
-            }
+                FerramentaId = dadosReserva.FerramentaId,
+                DataInicio = dadosReserva.DataInicio,
+                DataFim = dadosReserva.DataFim
+            };
 
+            var disponibilidade = await _disponibilidadeService.VerificarDisponibilidade(disponibilidadeDto);
+
+            if (!disponibilidade.Disponivel)
+            {
+                return BadRequest(new
+                {
+                    Mensagem = disponibilidade.Mensagem
+                });
+            }
 
             // Serve para criar uma nova reserva com os dados fornecidos
             var reserva = new Reserva
@@ -131,22 +149,27 @@ namespace uc10_Locatem.Controllers
         [HttpPut("aceitar/{id}")]
         public async Task<IActionResult> AceitarReserva(int id)
         {
-            // Aqui estou pegando o id do usuário logado para verificar se ele é o dono da ferramenta relacionada à reserva que está tentando aceitar
-            var usuarioId = int.Parse(User.FindFirst("id").Value);
+            var usuarioIdClaim = User.FindFirst("id")?.Value;
 
-            // Chama o método AceitarReserva do serviço de reservas, passando o id da reserva e o id do usuário logado
+            if (usuarioIdClaim == null)
+            {
+                return Unauthorized("Usuário não autenticado.");
+            }
+
+            int usuarioId = int.Parse(usuarioIdClaim);
+
             var (sucesso, mensagem) = await _reservaService.AceitarReserva(id, usuarioId);
 
-            // Se a aceitação não for bem-sucedida, retorna um erro 400 com a mensagem de erro
             if (!sucesso)
-                return BadRequest(mensagem);
-            // Se a aceitação for bem-sucedida, retorna um status 200 com a mensagem de sucesso
-            return Ok(mensagem);
+            {
+                return BadRequest(new { Mensagem = mensagem });
+            }
 
+            return Ok(new { Mensagem = mensagem });
         }
 
         [Authorize]
-        [HttpPut("recusar/{id}")]
+        [HttpPut("recusar/{reservaId}")]
         public async Task<IActionResult> RecusarReserva(int id)
         {
             // Aqui estou pegando o id do usuário logado para verificar se ele é o dono da ferramenta relacionada à reserva que está tentando recusar
