@@ -35,8 +35,8 @@ namespace uc10_Locatem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllFerramentas()
         {
-            var ferramentas = await _context.Ferramenta
-                .Include(f => f.categoria)
+            var ferramentas = await _ferramentaDbContext.Ferramenta
+                .Include(f => f.Categoria)
                 .ToListAsync();
 
             return Ok(ferramentas);
@@ -49,7 +49,7 @@ namespace uc10_Locatem.Controllers
         [HttpGet("Disponiveis")]
         public async Task<IActionResult> GetFerramentasDisponiveis()
         {
-            var ferramentas = await _context.Ferramenta
+            var ferramentas = await _ferramentaDbContext.Ferramenta
                 .Where(f =>
                     f.Status == StatusCadastro.Ativo &&
                     f.Disponibilidade == StatusDisponibilidade.Disponivel)
@@ -102,12 +102,12 @@ namespace uc10_Locatem.Controllers
 
                // CategoriaId = dadosFerramenta.CategoriaId,
                 UsuarioId = id,
-                Status = true,
+                //Status = true,
             };
 
-            await _context.Ferramenta.AddAsync(novaFerramenta);
+            await _ferramentaDbContext.Ferramenta.AddAsync(novaFerramenta);
 
-            int resultado = await _context.SaveChangesAsync();
+            int resultado = await _ferramentaDbContext.SaveChangesAsync();
 
             if (resultado > 0)
                 return CreatedAtAction(
@@ -141,7 +141,7 @@ namespace uc10_Locatem.Controllers
 
             int idUser = int.Parse(usuarioId);
 
-            var ferramenta = await _context.Ferramenta.FindAsync(id);
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
 
             if (ferramenta == null)
                 return NotFound("Ferramenta não encontrada");
@@ -165,7 +165,7 @@ namespace uc10_Locatem.Controllers
             ferramenta.Caucao = dto.Caucao;
             ferramenta.CategoriaId = dto.CategoriaId;
 
-            await _context.SaveChangesAsync();
+            await _ferramentaDbContext.SaveChangesAsync();
 
             return Ok("Ferramenta atualizada com sucesso");
         }
@@ -179,14 +179,14 @@ namespace uc10_Locatem.Controllers
             int id,
             [FromQuery] StatusDisponibilidade disponibilidade)
         {
-            var ferramenta = await _context.Ferramenta.FindAsync(id);
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
 
             if (ferramenta == null)
                 return NotFound("Ferramenta não encontrada");
 
             ferramenta.Disponibilidade = disponibilidade;
 
-            await _context.SaveChangesAsync();
+            await _ferramentaDbContext.SaveChangesAsync();
 
             return Ok(new
             {
@@ -203,14 +203,14 @@ namespace uc10_Locatem.Controllers
         [HttpPatch("{id}/Desativar")]
         public async Task<IActionResult> DesativarFerramenta(int id)
         {
-            var ferramenta = await _context.Ferramenta.FindAsync(id);
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
 
             if (ferramenta == null)
                 return NotFound("Ferramenta não encontrada");
 
             ferramenta.Status = StatusCadastro.Inativo;
 
-            await _context.SaveChangesAsync();
+            await _ferramentaDbContext.SaveChangesAsync();
 
             return Ok("Ferramenta desativada com sucesso");
         }
@@ -248,7 +248,7 @@ namespace uc10_Locatem.Controllers
 
             var query = _ferramentaDbContext.Ferramenta
                .Include(f => f.Usuario)
-                .Where(f => f.Status == true);
+                .Where(f => f.Status == StatusCadastro.Ativo);
 
             // filtro categoria
             if (dto.CategoriaId.HasValue)

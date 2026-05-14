@@ -34,7 +34,7 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public decimal Caucao { get; set; }
 
-        public bool Status {  get; set; }
+       // public bool Status {  get; set; }
 
         public DateTime DataCadastro { get; set; }
 
@@ -58,9 +58,9 @@ namespace uc10_Locatem.Model
         [JsonIgnore]
         public Usuario Usuario { get; set; } = null!;
 
-        [ForeignKey(nameof(CategoriaId))]
-        [JsonIgnore]
-        public Categorias categoria { get; set; } = null!;
+        //[ForeignKey(nameof(CategoriaId))]
+        //[JsonIgnore]
+        //public Categorias categoria { get; set; } = null!;
         
 
         public Ferramenta() {
