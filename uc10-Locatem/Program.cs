@@ -68,11 +68,34 @@ namespace uc10_Locatem
 
             app.UseHttpsRedirection();
 
+            // Junta o caminho da pasta do projeto com a pasta "Uploads"
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+            // Verifica se a pasta "Uploads" NÃO existe
+            if (!Directory.Exists(uploadPath))
+            {
+                // Se não existir, cria a pasta automaticamente
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            // Configura o servidor para permitir acessar arquivos da pasta "Uploads"
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+                // Define o caminho físico onde os arquivos estão no computador
+                FileProvider = new PhysicalFileProvider(uploadPath),
+
+                // Define a rota para acessar os arquivos pelo navegador
+                // Ex: /Uploads/imagem.png
                 RequestPath = "/Uploads"
             });
+
+            // Usar apenas DESENVOLVIMENTO
+            app.UseCors("PermitirTudo");
+
+            // Usar em PRODUCAO
+            //app.UseCors("PermitirFrontEnd");
+
+
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -50,6 +50,9 @@ namespace uc10_Locatem.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<bool>("EhPrioritario")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -166,11 +169,19 @@ namespace uc10_Locatem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CategoriaPaiId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("EhPadrao")
+                        .HasColumnType("bit");
+
                     b.Property<string>("nome")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoriaPaiId");
 
                     b.ToTable("Categorias");
                 });
@@ -412,10 +423,19 @@ namespace uc10_Locatem.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.Categoria", b =>
+                {
+                    b.HasOne("uc10_Locatem.Model.Categoria", "CategoriaPai")
+                        .WithMany("Subcategorias")
+                        .HasForeignKey("CategoriaPaiId");
+
+                    b.Navigation("CategoriaPai");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>
                 {
-                    b.HasOne("uc10_Locatem.Model.Categorias", "categoria")
-                        .WithMany()
+                    b.HasOne("uc10_Locatem.Model.Categoria", "Categoria")
+                        .WithMany("Ferramentas")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -426,9 +446,9 @@ namespace uc10_Locatem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Usuario");
+                    b.Navigation("Categoria");
 
-                    b.Navigation("categoria");
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.FerramentaImagem", b =>
@@ -470,6 +490,13 @@ namespace uc10_Locatem.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.Categoria", b =>
+                {
+                    b.Navigation("Ferramentas");
+
+                    b.Navigation("Subcategorias");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>

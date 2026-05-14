@@ -54,7 +54,8 @@ namespace uc10_Locatem.Controllers
             {
                 Mensagem = "Usuário criado com sucesso",
                 Nome = usuario.Nome,
-                TipoUsuario = usuario.TipoUsuario.ToString()
+                TipoUsuario = usuario.TipoUsuario.ToString(),
+                Id = usuario.Id
             });
 
             //[HttpPost("upload-foto")]

@@ -9,6 +9,7 @@ namespace uc10_Locatem.Model
 {
     public class Ferramenta
     {
+
         [Key]
         public int FerramentaId { get; set; }
 
@@ -33,11 +34,15 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public decimal Caucao { get; set; }
 
+        public bool Status {  get; set; }
+
         public DateTime DataCadastro { get; set; }
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
         //categorias da entidade categorias
         public int CategoriaId { get; set; }
+
+        public Categoria Categoria { get; set; } = null!;
 
         public int UsuarioId { get; set; }
 
