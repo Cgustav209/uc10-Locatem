@@ -8,9 +8,9 @@
         public string Modelo { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public List<string>? Acessorios { get; set; } = new();
-        public int Diaria { get; set; } 
-        public bool Status { get; set; }
-        
+        public int Diaria { get; set; }
+        public decimal Caucao { get; internal set; }
+        public int CategoriaId { get; internal set; }
     }
 
 }
