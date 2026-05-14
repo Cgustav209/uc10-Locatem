@@ -101,7 +101,8 @@ namespace uc10_Locatem
                     options.AddPolicy("PermitirTudo", policy =>
                     {
                         policy
-                            .AllowAnyOrigin() // Permite qualquer origem 
+                            .WithOrigins("http://127.0.0.1:5501")
+                            // .AllowAnyOrigin() // Permite qualquer origem 
                             .AllowAnyMethod() // Permite qualquer método HTTP
                             .AllowAnyHeader(); // Permite qualquer cabeçalho
                     });

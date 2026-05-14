@@ -12,8 +12,8 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260507202832_Inicial")]
-    partial class Inicial
+    [Migration("20260512194841_CorrigindoRelacionamentoEndereco")]
+    partial class CorrigindoRelacionamentoEndereco
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,7 +76,7 @@ namespace uc10_Locatem.Migrations
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsuarioId1")
+                    b.Property<int?>("UsuarioId1")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -410,7 +410,7 @@ namespace uc10_Locatem.Migrations
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UsuarioId1")
+                    b.Property<int>("UsuarioId1")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -424,17 +424,15 @@ namespace uc10_Locatem.Migrations
 
             modelBuilder.Entity("uc10_Locatem.API.Model.Endereco", b =>
                 {
-                    b.HasOne("uc10_Locatem.Model.Usuario", null)
+                    b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
+                    b.HasOne("uc10_Locatem.Model.Usuario", null)
                         .WithMany("Enderecos")
-                        .HasForeignKey("UsuarioId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UsuarioId1");
 
                     b.Navigation("Usuario");
                 });
@@ -564,7 +562,9 @@ namespace uc10_Locatem.Migrations
 
                     b.HasOne("uc10_Locatem.Model.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("UsuarioId1");
+                        .HasForeignKey("UsuarioId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Usuario");
                 });

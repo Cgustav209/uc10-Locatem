@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace uc10_Locatem.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class CorrigindoRelacionamentoEndereco : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,7 +72,7 @@ namespace uc10_Locatem.Migrations
                     CEP = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
                     EhPrioritario = table.Column<bool>(type: "bit", nullable: false),
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    UsuarioId1 = table.Column<int>(type: "int", nullable: false)
+                    UsuarioId1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,8 +86,7 @@ namespace uc10_Locatem.Migrations
                         name: "FK_Endereco_Usuario_UsuarioId1",
                         column: x => x.UsuarioId1,
                         principalTable: "Usuario",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -132,7 +131,7 @@ namespace uc10_Locatem.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UsuarioId = table.Column<int>(type: "int", nullable: false),
-                    UsuarioId1 = table.Column<int>(type: "int", nullable: true),
+                    UsuarioId1 = table.Column<int>(type: "int", nullable: false),
                     Telefone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TipoUsuario = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UrlFoto = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -149,7 +148,8 @@ namespace uc10_Locatem.Migrations
                         name: "FK_UsuarioPerfis_Usuario_UsuarioId1",
                         column: x => x.UsuarioId1,
                         principalTable: "Usuario",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

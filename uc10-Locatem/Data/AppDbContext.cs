@@ -106,14 +106,14 @@ namespace uc10_Locatem.Data
                 .HasForeignKey(a => a.FerramentaId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            
-            modelBuilder.Entity<Endereco>()
-                .HasOne<Usuario>()
-                .WithMany()
-                .HasForeignKey(e => e.UsuarioId)
-                .OnDelete(DeleteBehavior.NoAction);
 
-         
+            modelBuilder.Entity<Endereco>()
+            .HasOne(e => e.Usuario)
+            .WithMany()
+            .HasForeignKey(e => e.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
             modelBuilder.Entity<FerramentaImagem>()
                 .HasOne<Ferramenta>()
                 .WithMany()
