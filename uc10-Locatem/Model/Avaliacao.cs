@@ -30,6 +30,7 @@ namespace uc10_Locatem.Model
         public string? Comentario { get; set; }
 
         public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
+        public string ? AvaliacaoEntrega { get; set; }
     }
 
 }

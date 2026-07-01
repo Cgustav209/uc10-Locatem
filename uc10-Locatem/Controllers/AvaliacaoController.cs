@@ -11,7 +11,7 @@ namespace uc10_Locatem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+   // [Authorize]
     public class AvaliacaoController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -86,7 +86,8 @@ namespace uc10_Locatem.Controllers
                 AvaliadoUsuarioId = dto.AvaliadoUsuarioId,
                 FerramentaId = dto.FerramentaId,
                 Nota = dto.Nota,
-                Comentario = dto.Comentario
+                Comentario = dto.Comentario,
+                AvaliacaoEntrega = dto.AvaliacaoEntrega
             };
 
             _context.Avaliacoes.Add(avaliacao);
