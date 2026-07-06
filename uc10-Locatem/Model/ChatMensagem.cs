@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace uc10_Locatem.Model
 {
@@ -19,6 +20,7 @@ namespace uc10_Locatem.Model
         // RN004
         public DateTime DataEnvio { get; set; } = DateTime.UtcNow;
 
+        [JsonIgnore]
         public ChatConversa Conversa { get; set; }
     }
 }
