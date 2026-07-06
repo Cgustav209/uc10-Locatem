@@ -17,5 +17,6 @@ namespace uc10_Locatem.Model.DTO
         public int? AvaliadoUsuarioId { get; set; }
 
         public int? FerramentaId { get; set; }
+        public string ? AvaliacaoEntrega { get; set; }
     }
 }

@@ -27,6 +27,8 @@ namespace uc10_Locatem
             builder.Services.AddScoped<ReservaService>();
             builder.Services.AddScoped<GeolocalizacaoService>();
             builder.Services.AddHttpClient<EnderecoGeolocalizacaoService>();
+            builder.Services.AddScoped<ChatService>();
+
 
             //para os testes unitários
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
@@ -102,8 +104,8 @@ namespace uc10_Locatem
                     options.AddPolicy("PermitirTudo", policy =>
                     {
                         policy
-                            .WithOrigins("http://127.0.0.1:5501")
-                            // .AllowAnyOrigin() // Permite qualquer origem 
+                            //.WithOrigins("http://127.0.0.1:5501")
+                            .AllowAnyOrigin() // Permite qualquer origem 
                             .AllowAnyMethod() // Permite qualquer método HTTP
                             .AllowAnyHeader(); // Permite qualquer cabeçalho
                     });

@@ -137,6 +137,54 @@ namespace uc10_Locatem.Migrations
                     b.ToTable("Alugueis");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.Avaliacao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AluguelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AvaliacaoEntrega")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AvaliadoUsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AvaliadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comentario")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FerramentaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Nota")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AluguelId");
+
+                    b.HasIndex("AvaliadoUsuarioId");
+
+                    b.HasIndex("AvaliadorId");
+
+                    b.HasIndex("FerramentaId");
+
+                    b.ToTable("Avaliacoes");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.BloqueioDisponibilidade", b =>
                 {
                     b.Property<int>("Id")
@@ -166,7 +214,7 @@ namespace uc10_Locatem.Migrations
                     b.ToTable("BloqueioDisponibilidade");
                 });
 
-            modelBuilder.Entity("uc10_Locatem.Model.Categorias", b =>
+            modelBuilder.Entity("uc10_Locatem.Model.Categoria", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,6 +237,66 @@ namespace uc10_Locatem.Migrations
                     b.HasIndex("CategoriaPaiId");
 
                     b.ToTable("Categorias");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.ChatConversa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FerramentaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReservaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Usuario1Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Usuario2Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChatConversas");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.ChatMensagem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Conteudo")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("ConversaId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataEnvio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RemetenteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversaId");
+
+                    b.ToTable("ChatMensagens");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>
@@ -487,6 +595,17 @@ namespace uc10_Locatem.Migrations
                     b.Navigation("CategoriaPai");
                 });
 
+            modelBuilder.Entity("uc10_Locatem.Model.ChatMensagem", b =>
+                {
+                    b.HasOne("uc10_Locatem.Model.ChatConversa", "Conversa")
+                        .WithMany("Mensagens")
+                        .HasForeignKey("ConversaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversa");
+                });
+
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>
                 {
                     b.HasOne("uc10_Locatem.Model.Categoria", "Categoria")
@@ -558,6 +677,11 @@ namespace uc10_Locatem.Migrations
                     b.Navigation("Ferramentas");
 
                     b.Navigation("Subcategorias");
+                });
+
+            modelBuilder.Entity("uc10_Locatem.Model.ChatConversa", b =>
+                {
+                    b.Navigation("Mensagens");
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.Ferramenta", b =>

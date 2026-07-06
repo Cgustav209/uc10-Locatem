@@ -34,8 +34,6 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Campo Obrigatorio")]
         public decimal Caucao { get; set; }
 
-       // public bool Status {  get; set; }
-
         public DateTime DataCadastro { get; set; }
 
         [Required(ErrorMessage = "Campo Obrigatorio")]
