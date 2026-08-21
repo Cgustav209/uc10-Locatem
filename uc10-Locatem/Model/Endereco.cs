@@ -48,5 +48,10 @@ namespace uc10_Locatem.API.Model
         [ForeignKey("UsuarioId")]
         public Usuario Usuario { get; set; } = null!;
 
+
+        //para busca de ferramentas próximas
+
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
     }
 }
