@@ -6,6 +6,7 @@ using uc10_Locatem.API.Model;
 using uc10_Locatem.API.Model.DTO;
 using uc10_Locatem.Data;
 using uc10_Locatem.Model;
+using uc10_Locatem.Services;
 
 namespace uc10_Locatem.Controllers
 {
@@ -15,13 +16,16 @@ namespace uc10_Locatem.Controllers
     public class EnderecoController : ControllerBase
     {
         private readonly AppDbContext _enderecoDbContext;
+        private readonly EnderecoGeolocalizacaoService _geolocalizacao;
 
-        public EnderecoController(AppDbContext context)
+        public EnderecoController(AppDbContext context, EnderecoGeolocalizacaoService geolocalizacao)
         {
             _enderecoDbContext = context;
+            _geolocalizacao = geolocalizacao;
+            
         }
 
-        
+
         private int? ObterUsuarioId()
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -51,6 +55,7 @@ namespace uc10_Locatem.Controllers
 
             foreach (var dto in enderecosDto)
             {
+                try { 
                 // Regra de Prioridade: se o novo endereço for marcado como prioritário, desmarca o antigo prioritário
                 if (dto.EhPrioritario)
                 {
@@ -64,6 +69,12 @@ namespace uc10_Locatem.Controllers
                     }
                 }
 
+                var enderecoCompleto =
+                $"{dto.Logradouro}, {dto.Numero}, {dto.Bairro}, {dto.Cidade}, {dto.Estado}";
+                var coordenadas =
+                await _geolocalizacao
+                .ObterCoordenadasPorEndereco(enderecoCompleto);
+
                 enderecos.Add(new Endereco
                 {
                     Logradouro = dto.Logradouro,
@@ -73,12 +84,22 @@ namespace uc10_Locatem.Controllers
                     Cidade = dto.Cidade,
                     Estado = dto.Estado,
                     CEP = dto.CEP,
+
+                    Latitude = coordenadas.latitude,
+                    Longitude = coordenadas.longitude,
+
                     TipoEndereco = dto.TipoEndereco,
                     EhPrioritario = dto.EhPrioritario,
                     UsuarioId = usuarioId.Value
                 });
-            }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest($"Não foi possível localizar o endereço: {dto.Logradouro}. Erro: {ex.Message}");
+                }
 
+            }
+        
             await _enderecoDbContext.Endereco.AddRangeAsync(enderecos);
             await _enderecoDbContext.SaveChangesAsync();
 
@@ -149,6 +170,21 @@ namespace uc10_Locatem.Controllers
             enderecoExistente.CEP = dadosEndereco.CEP;
             enderecoExistente.TipoEndereco = dadosEndereco.TipoEndereco;
             enderecoExistente.EhPrioritario = dadosEndereco.EhPrioritario;
+
+            var enderecoCompleto =
+            $"{dadosEndereco.Logradouro}, " +
+            $"{dadosEndereco.Numero}, " +
+            $"{dadosEndereco.Bairro}, " +
+            $"{dadosEndereco.Cidade}, " +
+            $"{dadosEndereco.Estado}";
+
+            var coordenadas =
+            await _geolocalizacao
+           .ObterCoordenadasPorEndereco(enderecoCompleto);
+
+            enderecoExistente.Latitude = coordenadas.latitude;
+
+            enderecoExistente.Longitude = coordenadas.longitude;
 
             await _enderecoDbContext.SaveChangesAsync();
 

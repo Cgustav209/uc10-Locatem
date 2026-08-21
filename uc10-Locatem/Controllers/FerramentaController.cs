@@ -215,9 +215,12 @@ namespace uc10_Locatem.Controllers
             return Ok("Ferramenta desativada com sucesso");
         }
 
+             //BUSCAR FERRAMENTAS
+             //===============
+
         [HttpPost("BuscarFerramentasProximas")]
         public async Task<IActionResult> BuscarFerramentasProximas(
-    [FromBody] BuscarFerramentasDTO dto)
+        [FromBody] BuscarFerramentasDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -248,6 +251,7 @@ namespace uc10_Locatem.Controllers
 
             var query = _ferramentaDbContext.Ferramenta
                .Include(f => f.Usuario)
+               .ThenInclude (u => u.Enderecos)
                 .Where(f => f.Status == StatusCadastro.Ativo);
 
             // filtro categoria
@@ -259,22 +263,29 @@ namespace uc10_Locatem.Controllers
             var ferramentas = await query.ToListAsync();
 
             var resultado = ferramentas
-                .Select(f => new
-                {
-                    f.FerramentaId,
-                    f.Nome,
+           .Where(f => f.Usuario.Enderecos.Any(e => e.EhPrioritario))
+           .Select(f =>
+    {
+              var endereco = f.Usuario.Enderecos
+             .First(e => e.EhPrioritario);
 
-                    DistanciaKm = Math.Round(
-                        _geolocalizacaoService.CalcularDistancia(
-                            latitude,
-                            longitude,
-                            f.Usuario.Latitude,
-                            f.Usuario.Longitude
-                        ), 2)
+             return new
+           {
+            f.FerramentaId,
+            f.Nome,
+
+            DistanciaKm = Math.Round(
+                _geolocalizacaoService.CalcularDistancia(
+                    latitude,
+                    longitude,
+                    endereco.Latitude ?? 0,
+                    endereco.Longitude ?? 0
+                ), 2)
+                };
                 })
-                            .Where(f => f.DistanciaKm <= dto.RaioKm)
-                .OrderBy(f => f.DistanciaKm)
-                .ToList();
+            .Where(f => f.DistanciaKm <= dto.RaioKm)
+            .OrderBy(f => f.DistanciaKm)
+            .ToList();
 
             if (!resultado.Any())
             {

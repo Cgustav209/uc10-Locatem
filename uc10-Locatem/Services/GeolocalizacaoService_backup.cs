@@ -39,7 +39,7 @@ namespace uc10_Locatem.Services
             double lonUsuario,
             double raioKm)
         {
-            var ferramentas = await _context.Ferramenta.ToListAsync();
+            var ferramentas = await _context.Ferramenta.Include(f => f.Usuario).ToListAsync();
             
 
             return ferramentas
