@@ -109,7 +109,7 @@ namespace uc10_Locatem.Data
 
             modelBuilder.Entity<Endereco>()
                 .HasOne(e => e.Usuario)
-                .WithMany()
+                .WithMany(u => u.Enderecos)
                 .HasForeignKey(e => e.UsuarioId)
                 .OnDelete(DeleteBehavior.NoAction);
 

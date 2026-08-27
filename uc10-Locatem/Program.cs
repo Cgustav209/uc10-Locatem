@@ -120,7 +120,7 @@ namespace uc10_Locatem
                 app.MapScalarApiReference();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             // Junta o caminho da pasta do projeto com a pasta "Uploads"
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
