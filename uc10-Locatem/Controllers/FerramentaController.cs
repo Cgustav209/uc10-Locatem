@@ -252,7 +252,10 @@ namespace uc10_Locatem.Controllers
             var query = _ferramentaDbContext.Ferramenta
                .Include(f => f.Usuario)
                .ThenInclude (u => u.Enderecos)
-                .Where(f => f.Status == StatusCadastro.Ativo);
+               .Where(f =>f.Status == StatusCadastro.Ativo &&
+               f.Disponibilidade == StatusDisponibilidade.Disponivel);
+
+            //.Where(f => f.Status == StatusCadastro.Ativo);
 
             // filtro categoria
             if (dto.CategoriaId.HasValue)

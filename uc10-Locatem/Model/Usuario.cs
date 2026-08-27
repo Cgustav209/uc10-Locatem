@@ -61,6 +61,9 @@ namespace uc10_Locatem.Model
 
         public string? Endereco { get; set; }
 
+
+
+        // futuramente vou remover essas propriedades pois ficam redundantes , pois o endereço já possui latitude e longitude, então não faz sentido ter essas propriedades no usuário
         public double Latitude { get; set; }
 
         public double Longitude { get; set; }
