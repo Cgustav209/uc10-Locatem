@@ -78,7 +78,28 @@ namespace uc10_Locatem.Controllers
             if (tipoUsuario != TipoUsuario.Locador.ToString())
                 return Unauthorized("Somente locadores podem cadastrar ferramentas");
 
-            int id = int.Parse(usuarioId);
+           // int id = int.Parse(usuarioId);
+
+            //nova validação
+            if (!int.TryParse(usuarioId, out int id))
+            {
+                return Unauthorized(
+                    "O ID do usuário autenticado é inválido.");
+            }
+
+            var possuiEnderecoValido =
+                await _ferramentaDbContext.Endereco
+                    .AsNoTracking()
+                    .AnyAsync(e =>
+                        e.UsuarioId == id &&
+                        e.Latitude.HasValue &&
+                        e.Longitude.HasValue);
+
+            if (!possuiEnderecoValido)
+            {
+                return BadRequest(
+                    "É necessário cadastrar um endereço válido antes de cadastrar uma ferramenta.");
+            }
 
             string acessorios = string.Join(", ",
                 dto.Acessorios ?? new List<string>());
@@ -215,108 +236,28 @@ namespace uc10_Locatem.Controllers
             return Ok("Ferramenta desativada com sucesso");
         }
 
-        //BUSCAR FERRAMENTAS
-        //===============
-
-        //        [HttpPost("BuscarFerramentasProximas")]
-        //        public async Task<IActionResult> BuscarFerramentasProximas(
-        //        [FromBody] BuscarFerramentasDTO dto)
-        //        {
-        //            if (!ModelState.IsValid)
-        //            {
-        //                return BadRequest(ModelState);
-        //            }
-
-        //            double latitude;
-        //            double longitude;
-
-        //            // endereço OU coordenadas
-        //            if (!string.IsNullOrWhiteSpace(dto.Endereco))
-        //            {
-        //                var coordenadas = await _enderecoGeolocalizacaoService
-        //                    .ObterCoordenadasPorEndereco(dto.Endereco);
-
-        //                latitude = coordenadas.latitude;
-        //                longitude = coordenadas.longitude;
-        //            }
-        //            else if (dto.LatitudeUsuario.HasValue && dto.LongitudeUsuario.HasValue)
-        //            {
-        //                latitude = dto.LatitudeUsuario.Value;
-        //                longitude = dto.LongitudeUsuario.Value;
-        //            }
-        //            else
-        //            {
-        //                return BadRequest("Informe endereço ou coordenadas.");
-        //            }
-
-        //            var query = _ferramentaDbContext.Ferramenta
-        //               .Include(f => f.Usuario)
-        //               .ThenInclude (u => u.Enderecos)
-        //               .Where(f =>f.Status == StatusCadastro.Ativo &&
-        //               f.Disponibilidade == StatusDisponibilidade.Disponivel);
-
-        //            //.Where(f => f.Status == StatusCadastro.Ativo);
-
-        //            // filtro categoria
-        //            if (dto.CategoriaId.HasValue)
-        //            {
-        //                query = query.Where(f => f.CategoriaId == dto.CategoriaId.Value);
-        //            }
-
-        //            var ferramentas = await query.ToListAsync();
-        //            //logs temporarios
-        //            Console.WriteLine($"Ferramentas encontradas no banco: {ferramentas.Count}");
-
-        //            var resultado = ferramentas
-        //           .Where(f => f.Usuario.Enderecos.Any(e => e.EhPrioritario))
-        //           .Select(f =>
-        //    {
-        //              var endereco = f.Usuario.Enderecos
-        //             .First(e => e.EhPrioritario);
-
-        //             return new
-        //           {
-        //            f.FerramentaId,
-        //            f.Nome,
-
-        //            DistanciaKm = Math.Round(
-        //                _geolocalizacaoService.CalcularDistancia(
-        //                    latitude,
-        //                    longitude,
-        //                    endereco.Latitude ?? 0,
-        //                    endereco.Longitude ?? 0
-        //                ), 2)
-        //                };
-        //                })
-        //            .Where(f => f.DistanciaKm <= dto.RaioKm)
-        //            .OrderBy(f => f.DistanciaKm)
-        //            .ToList();
-
-        //            if (!resultado.Any())
-        //            {
-        //                return NotFound("Nenhuma ferramenta encontrada.");
-        //            }
-
-        //            return Ok(resultado);
-        //        }
-        //    }
-        //}
-
-
+        
 
         [HttpPost("BuscarFerramentasProximas")]
         public async Task<IActionResult> BuscarFerramentasProximas(
-    [FromBody] BuscarFerramentasDTO dto)
+        [FromBody] BuscarFerramentasDTO dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            if (dto.RaioKm <= 0)
+            {
+                return BadRequest(
+                    "O raio deve ser maior que zero.");
+            }
+
             double latitude;
             double longitude;
 
-            // Obtém localização do usuário
+            // A busca pode receber: 1.Endereco      2.LatitudeUsuario e LongitudeUsuario
+            
             if (!string.IsNullOrWhiteSpace(dto.Endereco))
             {
                 try
@@ -330,8 +271,12 @@ namespace uc10_Locatem.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(
-                        $"Erro ao localizar endereço informado: {ex.Message}");
+                    return BadRequest(new
+                    {
+                        mensagem =
+                            "Não foi possível localizar o endereço informado.",
+                        detalhe = ex.Message
+                    });
                 }
             }
             else if (
@@ -344,99 +289,32 @@ namespace uc10_Locatem.Controllers
             else
             {
                 return BadRequest(
-                    "Informe endereço ou coordenadas.");
+                    "Informe um endereço ou as coordenadas do usuário.");
             }
 
-            var query = _ferramentaDbContext.Ferramenta
-                .Include(f => f.Usuario)
-                .ThenInclude(u => u.Enderecos)
-                .Where(f =>
-                    f.Status == StatusCadastro.Ativo &&
-                    f.Disponibilidade == StatusDisponibilidade.Disponivel);
+            List<ResultadoBuscaFerramentaDTO> resultado;
 
-            if (dto.CategoriaId.HasValue)
+            try
             {
-                query = query.Where(f =>
-                    f.CategoriaId == dto.CategoriaId.Value);
-            }
-
-            var ferramentas = await query.ToListAsync();
-
-
-    //        return Ok(
-    //ferramentas.Select(f => new
-    //{
-    //    FerramentaId = f.FerramentaId,
-    //    Nome = f.Nome,
-    //    UsuarioId = f.UsuarioId,
-
-    //    Enderecos = f.Usuario.Enderecos.Select(e => new
-    //    {
-    //        e.Id,
-    //        e.UsuarioId,
-    //        e.Latitude,
-    //        e.Longitude,
-    //        e.EhPrioritario
-    //               })
-    //            })
-    //          );
-
-            if (!ferramentas.Any())
-            {
-                return NotFound(
-                    "Nenhuma ferramenta cadastrada.");
-            }
-
-            var resultado = new List<object>();
-
-            foreach (var ferramenta in ferramentas)
-            {
-                var endereco = ferramenta.Usuario?.Enderecos?
-                    .FirstOrDefault(e =>
-                        e.Latitude.HasValue &&
-                        e.Longitude.HasValue);
-
-                if (endereco == null)
-                {
-                    continue;
-                }
-
-                var distancia =
-                    _geolocalizacaoService.CalcularDistancia(
+                resultado =
+                    await _geolocalizacaoService.BuscarPorRaioAsync(
                         latitude,
                         longitude,
-                        endereco.Latitude.Value,
-                        endereco.Longitude.Value);
-
-                if (distancia <= dto.RaioKm)
-                {
-                    resultado.Add(new
-                    {
-                        ferramenta.FerramentaId,
-                        ferramenta.Nome,
-                        DistanciaKm = Math.Round(distancia, 2),
-
-                        LatitudeFerramenta = endereco.Latitude,
-                        LongitudeFerramenta = endereco.Longitude
-                    });
-                }
+                        dto.RaioKm,
+                        dto.CategoriaId);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
 
-            if (!resultado.Any())
+            if (resultado.Count == 0)
             {
                 return NotFound(
                     "Nenhuma ferramenta encontrada dentro do raio informado.");
             }
 
-            //return Ok(resultado);
-            return Ok(
-    ferramentas.Select(f => new
-    {
-        FerramentaId = f.FerramentaId,
-        UsuarioId = f.UsuarioId,
-        QuantidadeEnderecos = f.Usuario.Enderecos.Count
-    })
-);
+            return Ok(resultado);
         }
     }
 }
