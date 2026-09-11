@@ -78,7 +78,28 @@ namespace uc10_Locatem.Controllers
             if (tipoUsuario != TipoUsuario.Locador.ToString())
                 return Unauthorized("Somente locadores podem cadastrar ferramentas");
 
-            int id = int.Parse(usuarioId);
+           // int id = int.Parse(usuarioId);
+
+            //nova validação
+            if (!int.TryParse(usuarioId, out int id))
+            {
+                return Unauthorized(
+                    "O ID do usuário autenticado é inválido.");
+            }
+
+            var possuiEnderecoValido =
+                await _ferramentaDbContext.Endereco
+                    .AsNoTracking()
+                    .AnyAsync(e =>
+                        e.UsuarioId == id &&
+                        e.Latitude.HasValue &&
+                        e.Longitude.HasValue);
+
+            if (!possuiEnderecoValido)
+            {
+                return BadRequest(
+                    "É necessário cadastrar um endereço válido antes de cadastrar uma ferramenta.");
+            }
 
             string acessorios = string.Join(", ",
                 dto.Acessorios ?? new List<string>());
@@ -311,6 +332,12 @@ namespace uc10_Locatem.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (dto.RaioKm <= 0)
+            {
+                return BadRequest(
+                    "O raio deve ser maior que zero.");
             }
 
             double latitude;
