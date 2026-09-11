@@ -46,6 +46,40 @@ namespace uc10_Locatem.Controllers
         }
 
         [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetUsuarioLogado()
+        {
+            var usuarioId = User.FindFirst("id")?.Value;
+
+            if (usuarioId == null)
+            {
+                return Unauthorized("Usuário não autenticado");
+            }
+
+            int id = int.Parse(usuarioId);
+
+            var usuario = await _usuarioDbContext.Usuario
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado");
+            }
+           
+            return Ok(new
+            {
+                id = usuario.Id,
+                nome = usuario.Nome,
+                email = usuario.Email,
+                telefone = usuario.Telefone,
+                documento = usuario.Documento,
+                tipoUsuario = usuario.TipoUsuario.ToString(),
+                enderecos = usuario.Enderecos
+            });
+        }
+
+        [Authorize]
         [HttpPut("alterarSenha")]
         public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaDTO dadosUsuario)
         {
