@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+// este arquivo é para buscar ferramentas pro proximidade, e não para buscar ferramentas do usuário logado, que é feito em outro endpoint
 namespace uc10_Locatem.Model.DTO; 
 
 public class BuscarFerramentasDTO
