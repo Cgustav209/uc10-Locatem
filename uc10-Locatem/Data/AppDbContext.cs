@@ -21,8 +21,6 @@ namespace uc10_Locatem.Data
 
         public DbSet<Aluguel> Alugueis { get; set; } 
 
-        public DbSet<UsuarioPerfil> UsuarioPerfis { get; set; } 
-
         public DbSet<Ferramenta> Ferramenta { get; set; } 
 
         public DbSet<Reserva> Reserva { get; set; }
@@ -119,11 +117,7 @@ namespace uc10_Locatem.Data
                 .HasForeignKey(fi => fi.FerramentaId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UsuarioPerfil>()
-                .HasOne<Usuario>()
-                .WithMany()
-                .HasForeignKey(up => up.UsuarioId)
-                .OnDelete(DeleteBehavior.NoAction);
+          
         }
     }
 }

@@ -33,6 +33,8 @@ namespace uc10_Locatem.Model
         [Required(ErrorMessage = "Telefone é um campo obrigatorio")]
         public string Telefone { get; set; } = string.Empty;
 
+        public string? UrlFoto { get; set; }
+
         [Required(ErrorMessage = "Escolha um Tipo")]
         public TipoUsuario TipoUsuario { get; set; } 
 
