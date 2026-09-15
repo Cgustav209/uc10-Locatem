@@ -32,31 +32,15 @@ namespace uc10_Locatem.Controllers
             if (dto.Foto == null || dto.Foto.Length == 0)
                 return BadRequest("Arquivo inválido");
 
-            var usuarioExiste = await _context.Usuario
-                .AnyAsync(u => u.Id == dto.UsuarioId);
+            var usuario = await _context.Usuario
+                .FirstOrDefaultAsync(u => u.Id == dto.UsuarioId);
 
-            if (!usuarioExiste)
+            if (usuario == null)
                 return NotFound("Usuário não encontrado");
 
             var urlFoto = await SalvarArquivo(dto.Foto);
 
-            var perfil = await _context.UsuarioPerfis
-                .FirstOrDefaultAsync(p => p.UsuarioId == dto.UsuarioId);
-
-            if (perfil == null)
-            {
-                perfil = new UsuarioPerfil
-                {
-                    UsuarioId = dto.UsuarioId,
-                    UrlFoto = urlFoto
-                };
-
-                _context.UsuarioPerfis.Add(perfil);
-            }
-            else
-            {
-                perfil.UrlFoto = urlFoto;
-            }
+            usuario.UrlFoto = urlFoto;
 
             await _context.SaveChangesAsync();
 
@@ -71,22 +55,22 @@ namespace uc10_Locatem.Controllers
         [HttpDelete("foto-perfil/{usuarioId} excluir")]
         public async Task<IActionResult> DeletarFotoPerfil(int usuarioId)
         {
-            var perfil = await _context.UsuarioPerfis
-                .FirstOrDefaultAsync(p => p.UsuarioId == usuarioId);
+            var usuario = await _context.Usuario
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            if (perfil == null)
+            if (usuario == null || string.IsNullOrEmpty(usuario.UrlFoto))
                 return NotFound("Perfil não encontrado");
 
             var caminhoFisico = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                perfil.UrlFoto.Replace("/", "\\")
+                usuario.UrlFoto.Replace("/", "\\")
                     .Replace($"{Request.Scheme}://{Request.Host}\\", "")
             );
 
             if (System.IO.File.Exists(caminhoFisico))
                 System.IO.File.Delete(caminhoFisico);
 
-            _context.UsuarioPerfis.Remove(perfil);
+            usuario.UrlFoto = null;
 
             await _context.SaveChangesAsync();
 

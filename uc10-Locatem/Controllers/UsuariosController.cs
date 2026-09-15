@@ -67,8 +67,6 @@ namespace uc10_Locatem.Controllers
             {
                 return NotFound("Usuário não encontrado");
             }
-            var perfil = await _usuarioDbContext.UsuarioPerfis
-    .FirstOrDefaultAsync(p => p.UsuarioId == id);
 
             var avaliacoes = await _usuarioDbContext.Avaliacoes
                 .Where(a => a.AvaliadoUsuarioId == id)
@@ -99,7 +97,7 @@ namespace uc10_Locatem.Controllers
                 tipoUsuario = usuario.TipoUsuario.ToString(),
                 endereco = usuario.Endereco,
                 desde = usuario.DataCadastro.Year,
-                fotoUrl = perfil?.UrlFoto,
+                fotoUrl = usuario.UrlFoto,
                 reputacao = new
                 {
                     rating = mediaAvaliacao,
