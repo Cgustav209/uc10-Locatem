@@ -2,8 +2,8 @@
 {
     public class CadastrarFerramentaDTO
     {
-        internal decimal Caucao;
-
+        // internal decimal Caucao;
+        public decimal Caucao { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Marca { get; set; } = string.Empty;
         public string Modelo {  get; set; } = string.Empty;
