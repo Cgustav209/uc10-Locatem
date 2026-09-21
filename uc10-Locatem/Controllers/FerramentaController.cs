@@ -35,7 +35,17 @@ namespace uc10_Locatem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllFerramentas()
         {
+            var usuarioIdClaim = User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(usuarioIdClaim))
+            {
+                return Unauthorized("Usuário não identificado.");
+            }
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
             var ferramentas = await _ferramentaDbContext.Ferramenta
+                .Where(f => f.UsuarioId == usuarioId)
                 .Include(f => f.Categoria)
                 .ToListAsync();
 

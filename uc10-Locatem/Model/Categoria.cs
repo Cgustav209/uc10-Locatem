@@ -24,6 +24,7 @@ namespace uc10_Locatem.Model
         public ICollection<Categoria> Subcategorias { get; set; } = new List<Categoria>();
 
         // Relacionamento com ferramentas
+        [JsonIgnore]
         public ICollection<Ferramenta> Ferramentas { get; set; } = new List<Ferramenta>();
 
         // Categoria padrão
