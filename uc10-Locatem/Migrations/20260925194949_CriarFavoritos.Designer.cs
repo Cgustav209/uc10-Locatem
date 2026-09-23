@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uc10_Locatem.Data;
 
@@ -11,9 +12,11 @@ using uc10_Locatem.Data;
 namespace uc10_Locatem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260925194949_CriarFavoritos")]
+    partial class CriarFavoritos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,56 +243,6 @@ namespace uc10_Locatem.Migrations
                     b.HasIndex("CategoriaPaiId");
 
                     b.ToTable("Categorias");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            EhPadrao = true,
-                            nome = "Ferramentas Elétricas • Parafusadeira/Furadeira"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            EhPadrao = true,
-                            nome = "Ferramentas Elétricas • Corte e Desgaste"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            EhPadrao = true,
-                            nome = "Ferramentas Elétricas • Pintura"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            EhPadrao = true,
-                            nome = "Ferramentas Manuais"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            EhPadrao = true,
-                            nome = "Jardinagem e Paisagismo"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            EhPadrao = true,
-                            nome = "Construção e Alvenaria"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            EhPadrao = true,
-                            nome = "Elevação e Transporte"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            EhPadrao = true,
-                            nome = "Limpeza e Lavagem"
-                        });
                 });
 
             modelBuilder.Entity("uc10_Locatem.Model.ChatConversa", b =>

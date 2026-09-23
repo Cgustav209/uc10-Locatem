@@ -69,13 +69,15 @@ namespace uc10_Locatem.Controllers
                     }
                 }
 
-                var enderecoCompleto =
-                $"{dto.Logradouro}, {dto.Numero}, {dto.Bairro}, {dto.Cidade}, {dto.Estado}";
-                var coordenadas =
-                await _geolocalizacao
-                .ObterCoordenadasPorEndereco(enderecoCompleto);
+                    var enderecoCompleto =
+                    $"{dto.Logradouro}, {dto.Numero}, {dto.Bairro}, {dto.Cidade}, {dto.Estado}";
 
-                enderecos.Add(new Endereco
+                    var coordenadas = await _geolocalizacao.ObterCoordenadasPorEndereco(
+                        enderecoCompleto,
+                        dto.CEP
+                    );
+
+                    enderecos.Add(new Endereco
                 {
                     Logradouro = dto.Logradouro,
                     Numero = dto.Numero,
@@ -172,15 +174,17 @@ namespace uc10_Locatem.Controllers
             enderecoExistente.EhPrioritario = dadosEndereco.EhPrioritario;
 
             var enderecoCompleto =
-            $"{dadosEndereco.Logradouro}, " +
-            $"{dadosEndereco.Numero}, " +
-            $"{dadosEndereco.Bairro}, " +
-            $"{dadosEndereco.Cidade}, " +
-            $"{dadosEndereco.Estado}";
+             $"{dadosEndereco.Logradouro}, " +
+             $"{dadosEndereco.Numero}, " +
+             $"{dadosEndereco.Bairro}, " +
+             $"{dadosEndereco.Cidade}, " +
+             $"{dadosEndereco.Estado}";
 
             var coordenadas =
-            await _geolocalizacao
-           .ObterCoordenadasPorEndereco(enderecoCompleto);
+                await _geolocalizacao.ObterCoordenadasPorEndereco(
+                    enderecoCompleto,
+                    dadosEndereco.CEP
+                );
 
             enderecoExistente.Latitude = coordenadas.latitude;
 

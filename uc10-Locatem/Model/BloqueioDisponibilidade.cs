@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace uc10_Locatem.Model
 {
@@ -10,6 +12,10 @@ namespace uc10_Locatem.Model
 
         [Required(ErrorMessage = "O ID da ferramenta é obrigatório.")]
         public int FerramentaId { get; set; }
+
+        [ForeignKey(nameof(FerramentaId))]
+        [JsonIgnore]
+        public Ferramenta Ferramenta { get; set; } = null!;
 
 
         [Required(ErrorMessage = "A data de início é obrigatória.")]
