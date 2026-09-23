@@ -246,6 +246,21 @@ namespace uc10_Locatem.Controllers
             return Ok("Ferramenta desativada com sucesso");
         }
 
+        [HttpPatch("{id}/Ativar")]
+        public async Task<IActionResult> AtivarFerramenta(int id)
+        {
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
+
+            if (ferramenta == null)
+                return NotFound("Ferramenta não encontrada");
+
+            ferramenta.Status = StatusCadastro.Ativo;
+
+            await _ferramentaDbContext.SaveChangesAsync();
+
+            return Ok("Ferramenta ativada com sucesso");
+        }
+
         //BUSCAR FERRAMENTAS
         //===============
 
