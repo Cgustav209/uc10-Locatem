@@ -35,7 +35,17 @@ namespace uc10_Locatem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllFerramentas()
         {
+            var usuarioIdClaim = User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(usuarioIdClaim))
+            {
+                return Unauthorized("Usuário não identificado.");
+            }
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
             var ferramentas = await _ferramentaDbContext.Ferramenta
+                .Where(f => f.UsuarioId == usuarioId)
                 .Include(f => f.Categoria)
                 .ToListAsync();
 
@@ -236,6 +246,21 @@ namespace uc10_Locatem.Controllers
             return Ok("Ferramenta desativada com sucesso");
         }
 
+        [HttpPatch("{id}/Ativar")]
+        public async Task<IActionResult> AtivarFerramenta(int id)
+        {
+            var ferramenta = await _ferramentaDbContext.Ferramenta.FindAsync(id);
+
+            if (ferramenta == null)
+                return NotFound("Ferramenta não encontrada");
+
+            ferramenta.Status = StatusCadastro.Ativo;
+
+            await _ferramentaDbContext.SaveChangesAsync();
+
+            return Ok("Ferramenta ativada com sucesso");
+        }
+
         //BUSCAR FERRAMENTAS
         //===============
 
@@ -327,7 +352,7 @@ namespace uc10_Locatem.Controllers
 
         [HttpPost("BuscarFerramentasProximas")]
         public async Task<IActionResult> BuscarFerramentasProximas(
-    [FromBody] BuscarFerramentasDTO dto)
+        [FromBody] BuscarFerramentasDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -457,11 +482,11 @@ namespace uc10_Locatem.Controllers
 
             //return Ok(resultado);
             return Ok(
-    ferramentas.Select(f => new
-    {
-        FerramentaId = f.FerramentaId,
-        UsuarioId = f.UsuarioId,
-        QuantidadeEnderecos = f.Usuario.Enderecos.Count
+            ferramentas.Select(f => new
+            {
+            FerramentaId = f.FerramentaId,
+            UsuarioId = f.UsuarioId,
+            QuantidadeEnderecos = f.Usuario.Enderecos.Count
     })
 );
         }
