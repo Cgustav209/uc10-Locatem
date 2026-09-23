@@ -352,7 +352,7 @@ namespace uc10_Locatem.Controllers
 
         [HttpPost("BuscarFerramentasProximas")]
         public async Task<IActionResult> BuscarFerramentasProximas(
-    [FromBody] BuscarFerramentasDTO dto)
+        [FromBody] BuscarFerramentasDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -482,11 +482,11 @@ namespace uc10_Locatem.Controllers
 
             //return Ok(resultado);
             return Ok(
-    ferramentas.Select(f => new
-    {
-        FerramentaId = f.FerramentaId,
-        UsuarioId = f.UsuarioId,
-        QuantidadeEnderecos = f.Usuario.Enderecos.Count
+            ferramentas.Select(f => new
+            {
+            FerramentaId = f.FerramentaId,
+            UsuarioId = f.UsuarioId,
+            QuantidadeEnderecos = f.Usuario.Enderecos.Count
     })
 );
         }
