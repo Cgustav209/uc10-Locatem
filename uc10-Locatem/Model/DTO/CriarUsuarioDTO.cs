@@ -32,5 +32,27 @@ namespace uc10_Locatem.Model.DTO
 
         public TipoUsuario TipoUsuario { get; set; }
 
+        [Required(ErrorMessage = "CEP é obrigatório")]
+        [StringLength(9, MinimumLength = 8, ErrorMessage = "CEP inválido")]
+        public string Cep { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Logradouro é obrigatório")]
+        public string Logradouro { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Número é obrigatório")]
+        public string Numero { get; set; } = string.Empty;
+
+        public string Complemento { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Bairro é obrigatório")]
+        public string Bairro { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Cidade é obrigatória")]
+        public string Cidade { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Estado é obrigatório")]
+        [StringLength(2, MinimumLength = 2)]
+        public string Estado { get; set; } = string.Empty;
+
     }
 }

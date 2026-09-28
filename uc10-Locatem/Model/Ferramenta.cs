@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using uc10_Locatem.API.Model;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model.DTO;
 
@@ -45,6 +46,27 @@ namespace uc10_Locatem.Model
         public int UsuarioId { get; set; }
 
         public ICollection<FerramentaImagem> Imagens { get; set; } = [];
+
+        [Range(1, 999, ErrorMessage = "A quantidade disponível deve estar entre 1 e 999 unidades.")]
+        public int QuantidadeDisponivel { get; set; } = 1;
+
+        public string EstadoConservacao { get; set; } = string.Empty;
+
+        public string FonteAlimentacao { get; set; } = string.Empty;
+
+        // As especificações são persistidas em JSON para reaproveitar a estrutura flexível do formulário sem criar uma tabela duplicada.
+        public string EspecificacoesTecnicasJson { get; set; } = "[]";
+
+        public string TipoAprovacao { get; set; } = "manual";
+
+        public int? EnderecoId { get; set; }
+
+        [ForeignKey(nameof(EnderecoId))]
+        [JsonIgnore]
+        public Endereco? Endereco { get; set; }
+
+        [JsonIgnore]
+        public ICollection<BloqueioDisponibilidade> BloqueiosDisponibilidade { get; set; } = [];
 
         public StatusCadastro Status { get; set; } = StatusCadastro.Ativo;
 

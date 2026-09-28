@@ -28,6 +28,61 @@ namespace uc10_Locatem.Controllers
             _tokenService = tokenService;
         }
 
+        [AllowAnonymous]
+        [HttpGet("locador/{id:int}/perfil")]
+        public async Task<IActionResult> GetPerfilPublicoLocador(int id)
+        {
+            var usuario = await _usuarioDbContext.Usuario
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == id && u.TipoUsuario == TipoUsuario.Locador);
+
+            if (usuario == null)
+            {
+                return NotFound(new
+                {
+                    Erro = true,
+                    Mensagem = "Locador não encontrado"
+                });
+            }
+
+            var avaliacoes = await _usuarioDbContext.Avaliacoes
+                .Where(a => a.AvaliadoUsuarioId == id)
+                .ToListAsync();
+
+            var mediaAvaliacao = avaliacoes.Count > 0
+                ? avaliacoes.Average(a => a.Nota)
+                : 0;
+
+            var ferramentasAnunciadas = await _usuarioDbContext.Ferramenta
+                .CountAsync(f => f.UsuarioId == id && f.Status == StatusCadastro.Ativo);
+
+            var locacoesConcluidas = await _usuarioDbContext.Alugueis
+                .CountAsync(a =>
+                    a.Ferramenta.UsuarioId == id &&
+                    a.Status == StatusAluguel.Finalizado);
+
+            var endereco = usuario.Enderecos
+                .OrderByDescending(e => e.EhPrioritario)
+                .FirstOrDefault();
+
+            var localizacao = endereco == null
+                ? string.Empty
+                : $"{endereco.Cidade} - {endereco.Estado}";
+
+            return Ok(new PerfilPublicoLocadorResponseDTO
+            {
+                Id = usuario.Id,
+                Nome = usuario.Nome,
+                UrlFoto = usuario.UrlFoto,
+                Desde = usuario.DataCadastro.Year,
+                Localizacao = localizacao,
+                AvaliacaoMedia = mediaAvaliacao,
+                TotalAvaliacoes = avaliacoes.Count,
+                FerramentasAnunciadas = ferramentasAnunciadas,
+                LocacoesConcluidas = locacoesConcluidas
+            });
+        }
+
         [HttpGet("{tipo}/{id}")]
         public async Task<IActionResult> GetByTipoAndId(TipoUsuario tipo, int id)
         {

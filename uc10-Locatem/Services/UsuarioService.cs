@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using uc10_Locatem.API.Model;
 using uc10_Locatem.Data;
 using uc10_Locatem.Model;
 using uc10_Locatem.Services.Interfaces;
@@ -32,6 +33,15 @@ namespace uc10_Locatem.Services
         public async Task<Usuario> CriarUsuario(Usuario usuario)
         {
             _context.Usuario.Add(usuario);
+            await _context.SaveChangesAsync();
+            return usuario;
+        }
+
+        public async Task<Usuario> CriarUsuario(Usuario usuario, Endereco endereco)
+        {
+            _context.Usuario.Add(usuario);
+            endereco.Usuario = usuario;
+            _context.Endereco.Add(endereco);
             await _context.SaveChangesAsync();
             return usuario;
         }

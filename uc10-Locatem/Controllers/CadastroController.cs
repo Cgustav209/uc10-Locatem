@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using uc10_Locatem.API.Model;
 using uc10_Locatem.Data;
 using uc10_Locatem.Enum;
 using uc10_Locatem.Model;
@@ -46,9 +47,25 @@ namespace uc10_Locatem.Controllers
                 TipoUsuario = dadosUsuario.TipoUsuario,
                 Telefone = dadosUsuario.Telefone,
                 Documento = dadosUsuario.Documento,
+                Endereco = $"{dadosUsuario.Logradouro}, {dadosUsuario.Numero}, {dadosUsuario.Bairro}, {dadosUsuario.Cidade} - {dadosUsuario.Estado}, CEP {dadosUsuario.Cep}",
             };
 
-            await _usuarioService.CriarUsuario(usuario);
+            var endereco = new Endereco
+            {
+                Logradouro = dadosUsuario.Logradouro,
+                Numero = dadosUsuario.Numero,
+                Complemento = dadosUsuario.Complemento ?? string.Empty,
+                Bairro = dadosUsuario.Bairro,
+                Cidade = dadosUsuario.Cidade,
+                Estado = dadosUsuario.Estado.ToUpperInvariant(),
+                CEP = dadosUsuario.Cep,
+                TipoEndereco = TipoEndereco.Residencial,
+                EhPrioritario = true,
+            };
+
+            // O cadastro usa a mesma tabela de endereços já existente no projeto.
+            // Usuário e seu primeiro endereço são persistidos no mesmo SaveChanges.
+            await _usuarioService.CriarUsuario(usuario, endereco);
 
             return CreatedAtAction(nameof(CriarUsuario), new { id = usuario.Id }, new
             {
